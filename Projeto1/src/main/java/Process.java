@@ -7,22 +7,22 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Process extends Thread {
     private int state;
-    private final String name;
     private Key publicKey;
     private Key privateKey;
     private final MulticastSocket socket;
-    private ArrayList<Process> processosConhecidos;
     private final InetAddress group;
+    private Map<String, Key> processosConhecidos;
 
-    public Process(int state, String name, MulticastSocket socket, InetAddress group) {
+    public Process(int state, InetAddress group, MulticastSocket socket) {
         this.state = state;
-        this.name = name;
         this.socket = socket;
-        this.processosConhecidos = new ArrayList<>();
         this.group = group;
+        this.processosConhecidos = new HashMap<>();
         try{
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(2048);
@@ -34,11 +34,11 @@ public class Process extends Thread {
         }
     }
 
-    private void announce(){
+    public void announce(){
 
     }
 
-    private void criptografar (InputStream ) {
+    private void criptografar (InputStream input) {
 
     }
 
