@@ -3,26 +3,43 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
+    /**
+     * Constantes para definir o estado de um Processo.
+     */
     private static final int RELEASED = 0;
-    private static final int WANTED = 1;
-    private static final int HELD = 2;
+    private static final int WANTED   = 1;
+    private static final int HELD     = 2;
+    
+    /**
+     * Constantes para definir eventos de entrada e saída no grupo multicast.
+     */
+    public static final int IN_EVENT = 0;
+    public static final int OU_EVENT = 1;
 
+    /**
+     * Constantes para definir o IP do grupo multicast e a porta para conexão.
+     */
+    public static final String MULTICAST_IP = "228.5.6.7";
+    public static final int MULTICAST_PORT  = 6789;
+    
     public static void main(String args[]) {
+        try{
+            InetAddress group = InetAddress.getByName(MULTICAST_IP);
+            MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
+            Process process = new Process(RELEASED, group, socket);
+            process.announce(IN_EVENT);
+        }catch (UnknownHostException e){
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
+        }catch (IOException e){
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
         Scanner scan = new Scanner(System.in);
         String option = "";
-        try{
-            InetAddress group = InetAddress.getByName("228.5.6.7");
-            MulticastSocket socket = new MulticastSocket(6789);
-            Process process = new Process(RELEASED, group, socket);
-            process.announce();
-        }catch (UnknownHostException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
         while (option.equalsIgnoreCase("0")) {
             System.out.println("0 - sair");
             System.out.println("O que deseja fazer? ");

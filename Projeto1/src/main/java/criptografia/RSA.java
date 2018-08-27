@@ -2,11 +2,10 @@ package criptografia;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.PrivateKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -18,12 +17,13 @@ public class RSA {
 
     /**
      * Gera uma par de chaves Públic/Privada utilizando o algoritmo RSA.
-     * 
-     * @return [java.security.KeyPair] contendo um par de chaves Pública e Privada.
+     *
+     * @return [{@link java.security.KeyPair}] contendo um par de chaves Pública e
+     * Privada.
      */
     public static KeyPair gerarChavePublicaPrivada(){
         KeyPairGenerator kpg;
-        
+
         try {
             kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(2048);
@@ -31,23 +31,23 @@ public class RSA {
             Logger.getLogger(RSA.class.getName()).log(Level.SEVERE, null, ex);
             throw new RuntimeException("Falha ao Gerar par de Chaves Pública/Privada com algoritmo RSA.");
         }
-        
+
         return kpg.generateKeyPair();
     }
 
     /**
      * Criptografa uma mensagem em texto puro com uma chave Privada RSA.
-     * 
+     *
      * @param privateKey [Obrigatório] - Chave Privada para criptografia.
      * @param message    [Obrigatório] - Mensagem que será criptografada.
-     * 
+     *
      * @return [byte[]] contendo a mensagem criptografada.
      */
-    public static byte[] criptografar(PrivateKey privateKey, String message){
+    public static byte[] criptografar(Key privateKey, String message){
         if(privateKey == null || message == null){
             return null;
         }
-        
+
         Cipher cipher;
         byte[] dadosCriptografados = null;
 
@@ -64,18 +64,19 @@ public class RSA {
 
     /**
      * Descriptografa um conjunto de bytes com uma chave pública RSA.
-     * 
+     *
      * @param publicKey [Obrigatório] - Chave Pública para descriptografia.
      * @param data      [Obrigatório] - Array de Bytes que serão descriptografados.
-     * @param encode    [Obrigatório] - O encoding da mensagem original. Necessário para conversão entre bytes para String.
-     * 
-     * @return [java.lang.String] contendo a mensagem descriptografada.
+     * @param encode    [Obrigatório] - O encoding da mensagem original. Necessário
+     * para conversão entre bytes para String.
+     *
+     * @return [{@link java.lang.String}] contendo a mensagem descriptografada.
      */
-    public static String descriptografar(PublicKey publicKey, byte[] data, Charset encode){
+    public static String descriptografar(Key publicKey, byte[] data, Charset encode){
         if(publicKey == null || data == null || encode == null){
             return null;
         }
-        
+
         Cipher cipher;
         byte[] dadosDescriptografados = null;
 
