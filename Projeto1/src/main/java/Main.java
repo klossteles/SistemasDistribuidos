@@ -14,6 +14,8 @@ public class Main {
     private static final int WANTED   = 1;
     private static final int HELD     = 2;
     
+    public static final int TIMEOUT = 10000;//10 Segundos
+    
     /**
      * Constantes para definir eventos de entrada e saída no grupo multicast.
      */
