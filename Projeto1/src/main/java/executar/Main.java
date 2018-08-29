@@ -1,3 +1,5 @@
+package executar;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -5,6 +7,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import processos.Process;
 
 public class Main {
     /**
@@ -25,7 +28,7 @@ public class Main {
     /**
      * Constantes para definir o IP do grupo multicast e a porta para conexão.
      */
-    public static final String MULTICAST_IP = "229.5.6.10";
+    public static final String MULTICAST_IP = "233.5.6.10";
     public static final int MULTICAST_PORT  = 6789;
     
     public static void main(String args[]) {
@@ -34,8 +37,7 @@ public class Main {
             InetAddress group = InetAddress.getByName(MULTICAST_IP);
             MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
             process = new Process(RELEASED, group, socket);
-            process.announce(IN_EVENT);
-            process.start();
+            process.inicializar();
         }catch (UnknownHostException e){
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
             throw new RuntimeException();
@@ -47,15 +49,18 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         String option = "";
         while (!option.equalsIgnoreCase("0")) {
-            System.out.println("0 - sair");
+            System.out.println("0 - Sair");
             System.out.println("1 - Processos Conhecidos");
             System.out.println("2 - Quem sou eu");
-            System.out.println("O que deseja fazer? ");
+            System.out.println("O que deseja fazer?");
             option = scan.nextLine();
 
             switch (option){
+                case "0":
+                    process.encerrar();
+                    break;
                 case "1":
-                        System.out.println(process.getKnownProcess());
+                    System.out.println(process.getKnownProcess());
                     break;
                 case "2":
                     System.out.println("Meu id: " + process.whoAmI());
