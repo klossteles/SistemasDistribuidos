@@ -33,7 +33,7 @@ public class RSA {
 
         try {
             kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048);
+            kpg.initialize(4096);
         } catch(NoSuchAlgorithmException ex) {
             Logger.getLogger(RSA.class.getName()).log(Level.SEVERE, null, ex);
             throw new RuntimeException("Falha ao Gerar par de Chaves Pública/Privada com algoritmo RSA.");

@@ -16,17 +16,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Process extends Thread {
 
-    private String id;
+    private long id;
     private int state;
     private PublicKey publicKey;
     private PrivateKey privateKey;
     private final MulticastSocket socket;
     private final InetAddress group;
-    private Map<String, Key> processosConhecidos;
+    private Map<Long, Key> processosConhecidos;
 
     /**
      * Utilizado para definir o encoding do texto das mensagens enviadas.
@@ -35,9 +37,25 @@ public class Process extends Thread {
      */
     private final Charset encodingPadrao;
 
+    public String whoAmI(){
+        return String.valueOf(this.id);
+    }
+
+    public String getKnownProcess(){
+        JSONArray jsArray = new JSONArray();
+        for (Map.Entry<Long, Key> entry :  this.processosConhecidos.entrySet()) {
+            JSONObject jsObj = new JSONObject();
+            jsObj.put("id", entry.getKey());
+            jsObj.put("key", entry.getValue());
+            jsArray.put(jsObj);
+        }
+        return  jsArray.toString();
+    }
+
+
     public Process(int state, InetAddress group, MulticastSocket socket){
         //Utiliza como ID o instante em que o Processo foi criado, no formato ISO-8601.
-        this.id = Instant.now().toString();
+        this.id = Instant.now().toEpochMilli();
         this.state = state;
         this.socket = socket;
         this.group = group;
@@ -64,6 +82,7 @@ public class Process extends Thread {
         } catch(IOException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
         }
+        Logger.getLogger(Process.class.getName()).log(Level.INFO, "Anunciou");
     }
 
     @Override
@@ -76,6 +95,7 @@ public class Process extends Thread {
                 socket.setSoTimeout(Main.TIMEOUT);
                 socket.receive(messageIn);
                 tratarMensagemRecebida(messageIn);
+                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Recebeu um anuncio de:" + messageIn.getAddress());
             } catch(SocketTimeoutException ste){
                 // TODO: Verificar item 5: "A lista de pares deverá ser atualizada".
             }catch(IOException ex) {
@@ -104,13 +124,14 @@ public class Process extends Thread {
      * @return [{@link java.net.DatagramPacket}] contendo os dados de um processo 
      * que deseja entrar ou sair de um grupo multicast.
      */
-    private DatagramPacket createAnnounceDatagram(String id, PublicKey publicKey, final int groupEvent){
+    private DatagramPacket createAnnounceDatagram(long id, PublicKey publicKey, final int groupEvent){
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("key", RSA.publicKeyToString(publicKey));
         json.put("group_event", groupEvent);
         
-        byte[] data = criptografar(json.toString()); 
+//        byte[] data = criptografar(json.toString());
+        byte[] data = json.toString().getBytes();
         return new DatagramPacket(data, data.length, group, Main.MULTICAST_PORT);
     }
     
@@ -124,19 +145,23 @@ public class Process extends Thread {
         String mensagem = new String(datagram.getData(), encodingPadrao);
         JSONObject json = new JSONObject(mensagem);
         
-        String idRecebido           = json.getString("id");
+        Long idRecebido           = json.getLong("id");
         PublicKey publicKeyRecebida = RSA.StringToPublicKey(json.getString("key"));
         int groupEventRecebido      = json.getInt("group_event");
-        
-        //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
-        if(groupEventRecebido == Main.IN_EVENT){
-            processosConhecidos.putIfAbsent(idRecebido, publicKeyRecebida);
-        } 
-        //Se evento de saída, o par recebido é removido do conjunto de pares conhecidos.
-        else{
-            processosConhecidos.remove(idRecebido);
+
+        if (!idRecebido.equals(this.id)) {
+            //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
+            if(groupEventRecebido == Main.IN_EVENT && !this.processosConhecidos.containsKey(idRecebido)){
+                processosConhecidos.putIfAbsent(idRecebido, publicKeyRecebida);
+//                TODO: Remover o IN_EVENT, esta dando erro quando o processo já está no grupo
+                this.announce(Main.IN_EVENT);
+            }
+            //Se evento de saída, o par recebido é removido do conjunto de pares conhecidos.
+            else{
+                processosConhecidos.remove(idRecebido);
+            }
+        } else {
+            Logger.getLogger(Process.class.getName()).log(Level.INFO, "Me auto recebi");
         }
-        
-        
     }
 }

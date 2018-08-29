@@ -20,32 +20,47 @@ public class Main {
      * Constantes para definir eventos de entrada e saída no grupo multicast.
      */
     public static final int IN_EVENT = 0;
-    public static final int OU_EVENT = 1;
+    public static final int OUT_EVENT = 1;
 
     /**
      * Constantes para definir o IP do grupo multicast e a porta para conexão.
      */
-    public static final String MULTICAST_IP = "228.5.6.7";
+    public static final String MULTICAST_IP = "229.5.6.10";
     public static final int MULTICAST_PORT  = 6789;
     
     public static void main(String args[]) {
+        Process process = null;
         try{
             InetAddress group = InetAddress.getByName(MULTICAST_IP);
             MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
-            Process process = new Process(RELEASED, group, socket);
+            process = new Process(RELEASED, group, socket);
             process.announce(IN_EVENT);
+            process.start();
         }catch (UnknownHostException e){
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
+            throw new RuntimeException();
         }catch (IOException e){
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
+            throw new RuntimeException();
         }
-        
+
         Scanner scan = new Scanner(System.in);
         String option = "";
-        while (option.equalsIgnoreCase("0")) {
+        while (!option.equalsIgnoreCase("0")) {
             System.out.println("0 - sair");
+            System.out.println("1 - Processos Conhecidos");
+            System.out.println("2 - Quem sou eu");
             System.out.println("O que deseja fazer? ");
             option = scan.nextLine();
+
+            switch (option){
+                case "1":
+                        System.out.println(process.getKnownProcess());
+                    break;
+                case "2":
+                    System.out.println("Meu id: " + process.whoAmI());
+                    break;
+            }
         }
     }
 }
