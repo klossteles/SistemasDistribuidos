@@ -3,6 +3,7 @@ package processos;
 
 import executar.Main;
 import criptografia.RSA;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -31,7 +32,7 @@ public class Process extends Thread {
     private final PrivateKey privateKey;
     private final MulticastSocket socket;
     private final InetAddress group;
-    private final Map<Long, Key> processosConhecidos;
+    private final Map<Long, JSONObject> processosConhecidos;
 
     /**
      * Utilizado para definir o encoding do texto das mensagens enviadas.
@@ -40,7 +41,7 @@ public class Process extends Thread {
      */
     private final Charset encodingPadrao;
 
-    public Process(int state, InetAddress group, MulticastSocket socket){
+    public Process(int state, InetAddress group, MulticastSocket socket) {
         //Utiliza como ID o instante em que o Processo foi criado, utilizando o Epoch.
         this.id = Instant.now().toEpochMilli();
         this.state = state;
@@ -62,7 +63,7 @@ public class Process extends Thread {
      * <li>3. Inicia a thread que irá tratar as mensagens enviadas por outros pares;</li>
      * </ul>
      */
-    public void inicializar(){
+    public void inicializar() {
         joinMulticastGroup();
         announce(Main.IN_EVENT);
         start();
@@ -76,34 +77,36 @@ public class Process extends Thread {
      * <li>3. Encerra a thread que trata as mensagens enviadas por outros pares;</li>
      * </ul>
      */
-    public void encerrar(){
+    public void encerrar() {
         announce(Main.OUT_EVENT);
         leaveMulticastGroup();
-        stop();
+        this.stop();
     }
 
-    public void setState(int state){
+    public void setState(int state) {
         this.state = state;
     }
-    
+
     /**
      * Retorna o ID do processo, como String.
+     *
      * @return [{@link java.lang.String}] contendo o ID do process.
      */
-    public String whoAmI(){
+    public String whoAmI() {
         return String.valueOf(this.id);
     }
 
     /**
      * Retorna uma lista de pares conhecidos, em formado de String.
+     *
      * @return [{@link java.lang.String}] contendo uma lista de pares conhecidos.
      */
-    public String getKnownProcess(){
+    public String getKnownProcess() {
         JSONArray jsArray = new JSONArray();
-        for(Map.Entry<Long, Key> entry : this.processosConhecidos.entrySet()){
+        for (Map.Entry<Long, JSONObject> entry : this.processosConhecidos.entrySet()) {
             JSONObject jsObj = new JSONObject();
             jsObj.put("id", entry.getKey());
-            jsObj.put("key", entry.getValue());
+            jsObj.put("json", entry.getValue());
             jsArray.put(jsObj);
         }
         return jsArray.toString(4);//4 espaços para a indentação
@@ -115,11 +118,11 @@ public class Process extends Thread {
      * @return TRUE caso o acesso ao grupo ocorra corretamente. FALSE caso
      * contrário.
      */
-    private boolean joinMulticastGroup(){
+    private boolean joinMulticastGroup() {
         try {
             socket.joinGroup(group);
             return true;
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, "Falha ao tentar acessar grupo multicast.", ex);
             return false;
         }
@@ -131,11 +134,11 @@ public class Process extends Thread {
      * @return TRUE caso a saída do grupo ocorreu corretamente. FALSE caso
      * contrário.
      */
-    private boolean leaveMulticastGroup(){
+    private boolean leaveMulticastGroup() {
         try {
             socket.leaveGroup(group);
             return true;
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -146,14 +149,17 @@ public class Process extends Thread {
      * no grupo multicast em que está vinculado.
      *
      * @param groupEvent [Obrigatório] - Se 0, representa um anúncio de entrada
-     * no grupo multicast. Se 1, representa um anúncio de saída do grupo
-     * multicast.
+     *                   no grupo multicast. Se 1, representa um anúncio de saída do grupo
+     *                   multicast.
      */
-    public void announce(final int groupEvent){
+    public void announce(final int groupEvent) {
         try {
+            for (Map.Entry<Long, JSONObject> entry : this.processosConhecidos.entrySet()) {
+                setObteveResposta(entry.getKey(),0);
+            }
             DatagramPacket announcePacket = createAnnounceDatagram(id, publicKey, groupEvent);
             socket.send(announcePacket);
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
         }
 //        Logger.getLogger(Process.class.getName()).log(Level.INFO, "Anunciou. TIPO de Evento: {0}", groupEvent == 0 ? "ENTRADA" : "SAÍDA");
@@ -162,25 +168,25 @@ public class Process extends Thread {
     /**
      * Thread que executa um socket receive para capturar as mensagens dos
      * outros pares do grupo multicast.
-     *
      */
     @Override
-    public void run(){
+    public void run() {
         byte[] buffer = new byte[1000];
         DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
-        while(true){
+        while (true) {
             try {
                 //Define o timeout para receber as respostas do grupo
                 socket.setSoTimeout(Main.TIMEOUT);
                 socket.receive(messageIn);
                 tratarMensagemRecebida(messageIn);
 //                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Recebeu um anuncio de:{0}", messageIn.getAddress());
-            } catch(SocketTimeoutException ste) {
+            } catch (SocketTimeoutException ste) {
                 //TODO: Verificar com a professora o que realmente deve ser feito ao ocorrer o timeout.
                 //A lógica abaixo só faz sentido se o TIMEOUT for GRANDE.
+                trataTimeOut();
 //                this.processosConhecidos.clear();
 //                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Timeout Alcançado no Processo {0}. Lista de pares conhecidos está vazia.", this.id);
-            } catch(IOException ex) {
+            } catch (IOException ex) {
                 Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -190,18 +196,20 @@ public class Process extends Thread {
      * Cria um objeto DatagramPacket utilizado para fazer o anúncio de um par em
      * um grupo multicast.
      *
-     * @param id [Obrigatório] - Identificador único para o processo.
-     * @param publicKey [Obrigatório] - A chave pública do processo.
+     * @param id         [Obrigatório] - Identificador único para o processo.
+     * @param publicKey  [Obrigatório] - A chave pública do processo.
      * @param groupEvent [Obrigatório] - FLAG para definir entrada ou saída do
-     * grupo multicast.
-     *
+     *                   grupo multicast.
      * @return [{@link java.net.DatagramPacket}] contendo os dados de um
      * processo que deseja entrar ou sair de um grupo multicast.
      */
-    private DatagramPacket createAnnounceDatagram(long id, PublicKey publicKey, final int groupEvent){
+    private DatagramPacket createAnnounceDatagram(long id, PublicKey publicKey, final int groupEvent) {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("key", RSA.publicKeyToString(publicKey));
+        JSONObject js = new JSONObject();
+        js.put("key", RSA.publicKeyToString(publicKey));
+        js.put("obteve_resposta", 1);
+        json.put("json", js.toString());
         json.put("group_event", groupEvent);
 
 //        byte[] data = criptografar(json.toString());
@@ -212,52 +220,77 @@ public class Process extends Thread {
     /**
      * Trata um DatagramPacket advindo do anúncio de outro par. Considera que a
      * mensagem recebida NÃO está criptografada.
-     * 
+     *
      * <table border="1">
-        <tr>
-          <th colspan="2">Casos Considerados</th>
-        </tr>
-        <tr>
-          <th>Caso Considerado</th>
-          <th>Ação Executada</th>
-        </tr>
-        <tr>
-          <td>(Par Emissor) == (Par Receptor)</td>
-          <td>Nenhuma operação é executada</td>
-        </tr>
-        <tr>
-          <td>(Par Emissor) != (Par Receptor) &amp;&amp; TIPO_EVENTO == (Evento de Entrada) &amp;&amp; Emissor ainda não é conhecido</td>
-          <td>Emissor é inserido na lista de pares conhecidos;<br>Receptor se anuncia novamente;</td>
-        </tr>
-        <tr>
-          <td>(Par Emissor) != (Par Receptor) &amp;&amp; TIPO_EVENTO == (Evento de Saída) &amp;&amp; Emissor é conhecido</td>
-          <td>Emissor é removido da lista de pares conhecidos</td>
-        </tr>
-      </table>
-     * 
+     * <tr>
+     * <th colspan="2">Casos Considerados</th>
+     * </tr>
+     * <tr>
+     * <th>Caso Considerado</th>
+     * <th>Ação Executada</th>
+     * </tr>
+     * <tr>
+     * <td>(Par Emissor) == (Par Receptor)</td>
+     * <td>Nenhuma operação é executada</td>
+     * </tr>
+     * <tr>
+     * <td>(Par Emissor) != (Par Receptor) &amp;&amp; TIPO_EVENTO == (Evento de Entrada) &amp;&amp; Emissor ainda não é conhecido</td>
+     * <td>Emissor é inserido na lista de pares conhecidos;<br>Receptor se anuncia novamente;</td>
+     * </tr>
+     * <tr>
+     * <td>(Par Emissor) != (Par Receptor) &amp;&amp; TIPO_EVENTO == (Evento de Saída) &amp;&amp; Emissor é conhecido</td>
+     * <td>Emissor é removido da lista de pares conhecidos</td>
+     * </tr>
+     * </table>
+     *
      * @param datagram [Obrigatório] - DatagramPacket contendo a mensagem recebida.
      */
-    private void tratarMensagemRecebida(DatagramPacket datagram){
+    private void tratarMensagemRecebida(DatagramPacket datagram) {
         String mensagem = new String(datagram.getData(), encodingPadrao);
         JSONObject json = new JSONObject(mensagem);
 
         Long idRecebido = json.getLong("id");
-        PublicKey publicKeyRecebida = RSA.StringToPublicKey(json.getString("key"));
+//        PublicKey publicKeyRecebida = RSA.StringToPublicKey(json.getString("key"));
+        JSONObject js = new JSONObject(json.getString("json"));
         int groupEventRecebido = json.getInt("group_event");
 
-        if(!idRecebido.equals(this.id)){
+        if (!idRecebido.equals(this.id)) {
             //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
-            if(groupEventRecebido == Main.IN_EVENT){
-                if(!this.processosConhecidos.containsKey(idRecebido)){
-                    processosConhecidos.putIfAbsent(idRecebido, publicKeyRecebida);
+            if (groupEventRecebido == Main.IN_EVENT) {
+                if (!this.processosConhecidos.containsKey(idRecebido)) {
+//                    processosConhecidos.putIfAbsent(idRecebido, publicKeyRecebida);
+                    processosConhecidos.putIfAbsent(idRecebido, js);
                     this.announce(Main.IN_EVENT);
                     Logger.getLogger(Process.class.getName()).log(Level.INFO, "Inseriu:{0}", idRecebido);
                 }
-            } //Se evento de saída, o par recebido é removido do conjunto de pares conhecidos.
-            else{
+                setObteveResposta(idRecebido, 1);
+            } else { //Se evento de saída, o par recebido é removido do conjunto de pares conhecidos.
                 processosConhecidos.remove(idRecebido);
                 Logger.getLogger(Process.class.getName()).log(Level.INFO, "Removeu:{0}", idRecebido);
             }
         }
     }
+
+    private void setObteveResposta(Long processId, int value) {
+        for (Map.Entry<Long, JSONObject> entry : this.processosConhecidos.entrySet()) {
+            if (entry.getKey().equals(processId)) {
+                JSONObject jsonObject = entry.getValue();
+                jsonObject.put("obteve_resposta", value);
+            }
+        }
+    }
+
+    /**
+     *
+     *
+     */
+    private void trataTimeOut() {
+        for (Map.Entry<Long, JSONObject> entry : this.processosConhecidos.entrySet()) {
+            JSONObject jsonObject = entry.getValue();
+            if (jsonObject.get("obteve_resposta").equals(0)) {
+                this.processosConhecidos.remove(entry.getKey());
+            }
+        }
+    }
+
 }
