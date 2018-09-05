@@ -8,23 +8,32 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import processos.Process;
+import static constantes.ProcessResourceState.*;
+import java.nio.charset.Charset;
 
 public class Main {
     /**
      * Constantes para definir o estado de um Processo.
      */
-    private static final int RELEASED = 0;
-    private static final int WANTED   = 1;
-    private static final int HELD     = 2;
+//    private static final int RELEASED = 0;
+//    private static final int WANTED   = 1;
+//    private static final int HELD     = 2;
     
     public static final int TIMEOUT = 10000;//10 Segundos
     
     /**
      * Constantes para definir eventos de entrada e saída no grupo multicast.
      */
-    public static final int IN_EVENT = 0;
-    public static final int OUT_EVENT = 1;
+//    public static final int IN_EVENT = 0;
+//    public static final int OUT_EVENT = 1;
 
+    /**
+     * Utilizado para definir o encoding do texto das mensagens enviadas.
+     * Necessário para efetuar a descriptografia adequada das mensagens
+     * trocadas.
+     */
+    public static final Charset DEFAULT_ENCODING = Charset.defaultCharset();
+    
     /**
      * Constantes para definir o IP do grupo multicast e a porta para conexão.
      */
@@ -40,10 +49,10 @@ public class Main {
             process.inicializar();
         }catch (UnknownHostException e){
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }catch (IOException e){
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
         Scanner scan = new Scanner(System.in);
@@ -64,6 +73,9 @@ public class Main {
                     break;
                 case "2":
                     System.out.println("Meu id: " + process.whoAmI());
+                    break;
+                default:
+                    System.err.println("Opção Indisponível");
                     break;
             }
         }
