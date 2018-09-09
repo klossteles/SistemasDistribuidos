@@ -14,6 +14,7 @@ import java.security.PublicKey;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -29,7 +30,7 @@ public class Process extends Thread {
     private final PrivateKey privateKey;
     private final MulticastSocket socket;
     private final InetAddress group;
-    private final Map<Long, JSONObject> processosConhecidos;
+    private final ConcurrentHashMap<Long, JSONObject> processosConhecidos;
     private final Map<Long, Recurso> recursos;
 
     public Process(ProcessResourceState state, InetAddress group, MulticastSocket socket){
@@ -38,7 +39,7 @@ public class Process extends Thread {
         this.state = state;
         this.socket = socket;
         this.group = group;
-        this.processosConhecidos = new HashMap<>();
+        this.processosConhecidos = new ConcurrentHashMap<>();
         this.recursos = new HashMap<>();
 
         KeyPair kp = RSA.gerarChavePublicaPrivada();
@@ -63,7 +64,7 @@ public class Process extends Thread {
         return group;
     }
 
-    public Map<Long, JSONObject> getProcessosConhecidos(){
+    public ConcurrentHashMap<Long, JSONObject> getProcessosConhecidos(){
         return processosConhecidos;
     }
 

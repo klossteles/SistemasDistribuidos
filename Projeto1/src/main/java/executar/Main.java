@@ -73,34 +73,14 @@ public class Main {
         Process finalProcess = process;
 //        Cria timer para buscar pelos processos vivos
 //        para isso, coloca obteve_resposta como 0 e se anuncia
-        Timer timerCheckLive = new Timer();
-        timerCheckLive.scheduleAtFixedRate(new TimerTask() {
+        Timer timerCheckWhoIsAlive = new Timer();
+        timerCheckWhoIsAlive.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                for (Map.Entry<Long, JSONObject> entry : finalProcess.getProcessosConhecidos().entrySet()){
-                    JSONObject jsonObject = entry.getValue();
-                    jsonObject.put("obteve_resposta", 0);
-                }
-                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
                 Mensagem.announce(MessageType.ANNOUNCE, finalProcess);
+                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
             }
         },0, TIMEOUT);
-//         TODO: Ocorrendo erro java.util.ConcurrentModificationException, ao iniciar o segundo timer
-//        Cria timer para verificar quem respondeu
-//        caso obteve_reposta == 0 remove da lista de conhecidos
-//        Timer timerRemoveDead = new Timer();
-//        timerRemoveDead.scheduleAtFixedRate(new TimerTask() {
-//            @Override
-//            public void run() {
-//                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Verificando quem respondeu");
-//                for(Map.Entry<Long, JSONObject> entry : finalProcess.getProcessosConhecidos().entrySet()){
-//                    JSONObject jsonObject = entry.getValue();
-//                    if(jsonObject.get("obteve_resposta").equals(0)){
-//                        finalProcess.getProcessosConhecidos().remove(entry.getKey());
-//                    }
-//                }
-//            }
-//        }, 5, TIMEOUT);
 
         while (!option.equalsIgnoreCase("0")) {
             System.out.println("0 - Sair");
