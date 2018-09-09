@@ -4,10 +4,22 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.time.Instant;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import constantes.MessageType;
+import org.json.JSONObject;
+import processos.Mensagem;
 import processos.Process;
+
 import static constantes.ProcessResourceState.*;
 import java.nio.charset.Charset;
 
@@ -57,6 +69,39 @@ public class Main {
 
         Scanner scan = new Scanner(System.in);
         String option = "";
+
+        Process finalProcess = process;
+//        Cria timer para buscar pelos processos vivos
+//        para isso, coloca obteve_resposta como 0 e se anuncia
+        Timer timerCheckLive = new Timer();
+        timerCheckLive.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                for (Map.Entry<Long, JSONObject> entry : finalProcess.getProcessosConhecidos().entrySet()){
+                    JSONObject jsonObject = entry.getValue();
+                    jsonObject.put("obteve_resposta", 0);
+                }
+                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
+                Mensagem.announce(MessageType.ANNOUNCE, finalProcess);
+            }
+        },0, TIMEOUT);
+//         TODO: Ocorrendo erro java.util.ConcurrentModificationException, ao iniciar o segundo timer
+//        Cria timer para verificar quem respondeu
+//        caso obteve_reposta == 0 remove da lista de conhecidos
+//        Timer timerRemoveDead = new Timer();
+//        timerRemoveDead.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Verificando quem respondeu");
+//                for(Map.Entry<Long, JSONObject> entry : finalProcess.getProcessosConhecidos().entrySet()){
+//                    JSONObject jsonObject = entry.getValue();
+//                    if(jsonObject.get("obteve_resposta").equals(0)){
+//                        finalProcess.getProcessosConhecidos().remove(entry.getKey());
+//                    }
+//                }
+//            }
+//        }, 5, TIMEOUT);
+
         while (!option.equalsIgnoreCase("0")) {
             System.out.println("0 - Sair");
             System.out.println("1 - Processos Conhecidos");
