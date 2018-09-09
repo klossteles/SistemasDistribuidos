@@ -13,6 +13,8 @@ import java.net.DatagramPacket;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -40,6 +42,19 @@ public class Mensagem {
             }
             DatagramPacket announcePacket = createAnnounceDatagram(type, process);
             process.getSocket().send(announcePacket);
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Logger.getLogger(Process.class.getName()).log(Level.INFO, "Verificando quem respondeu");
+                    for(Map.Entry<Long, JSONObject> entry : process.getProcessosConhecidos().entrySet()){
+                        JSONObject jsonObject = entry.getValue();
+                        if(jsonObject.get("obteve_resposta").equals(0)){
+                            process.getProcessosConhecidos().remove(entry.getKey());
+                        }
+                    }
+                }
+            }, Main.TIMEOUT);
         } catch(IOException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -115,6 +130,10 @@ public class Mensagem {
             case RESOURCE_RELEASE:
                 break;
             case ANNOUNCE:
+                if (!process.getProcessosConhecidos().containsKey(idRecebido)){
+                    process.getProcessosConhecidos().putIfAbsent(idRecebido, js);
+                    Logger.getLogger(Process.class.getName()).log(Level.INFO, "Inseriu:{0}", idRecebido);
+                }
                 setObteveResposta(idRecebido, 1, process);
                 Logger.getLogger(Process.class.getName()).log(Level.INFO, "Se Anunciou:{0}", idRecebido);
                 break;
