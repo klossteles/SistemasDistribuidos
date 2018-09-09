@@ -14,7 +14,8 @@ public enum MessageType {
     GROUP_IN(0),
     GROUP_OUT(1),
     RESOURCE_REQUEST(2),
-    RESOURCE_RELEASE(3);
+    RESOURCE_RELEASE(3),
+    ANNOUNCE(4);
 
     private final int typeCode;
 

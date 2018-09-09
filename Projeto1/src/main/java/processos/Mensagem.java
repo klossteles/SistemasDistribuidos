@@ -72,6 +72,9 @@ public class Mensagem {
      * Saída) &amp;&amp; Emissor é conhecido</td>
      * <td>Emissor é removido da lista de pares conhecidos</td>
      * </tr>
+     * <tr>
+     * <td>TIPO_EVENTO == (Evento de anúncio) &amp;&amp; Marca processo conhecido como ativo</td>
+     * </tr>
      * </table>
      *
      * @param datagram [Obrigatório] - DatagramPacket contendo a mensagem
@@ -110,6 +113,10 @@ public class Mensagem {
             case RESOURCE_REQUEST:
                 break;
             case RESOURCE_RELEASE:
+                break;
+            case ANNOUNCE:
+                setObteveResposta(idRecebido, 1, process);
+                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Se Anunciou:{0}", idRecebido);
                 break;
         }
     }
