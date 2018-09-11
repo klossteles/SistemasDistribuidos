@@ -57,6 +57,10 @@ public class Recurso {
         return processosSolicitantes;
     }
 
+    public void setEstadoSolicitacao(ProcessResourceState estadoSolicitacao){
+        this.estadoSolicitacao = estadoSolicitacao;
+    }
+
     /**
      * Adiciona um Processo ao fim da fila de solicitantes.
      * @param process 

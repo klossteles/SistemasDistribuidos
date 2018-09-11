@@ -34,8 +34,9 @@ public class Process extends Thread {
     private final Map<Long, Recurso> recursosDisponiveis;
 
     private static final Logger LOG = Logger.getLogger(Process.class.getName());
-    private int processosConhecidosAoSolicitarRecurso = 0;
-    
+    private int processosConhecidosAoSolicitarRecurso = -1;
+    public volatile boolean wait = false;
+
     public Process(ProcessResourceState state, InetAddress group, MulticastSocket socket){
         //Utiliza como ID o instante em que o Processo foi criado, utilizando o Epoch.
         this.id = Instant.now().toEpochMilli();
@@ -201,6 +202,8 @@ public class Process extends Thread {
 
         Mensagem.clearReceivedMessages();
         Mensagem.resource(RESOURCE_REQUEST, this, resource);
+        wait = true;
+        while(wait);//espera ocupada. Faz a chamada solicitar ser bloqueante.
         LOG.info(String.format("O recurso de ID '%d' foi solicitado pelo processo '%s'.", idRecurso, this.id));
         return true;
     }
@@ -226,6 +229,7 @@ public class Process extends Thread {
             return false;
         }
 
+        this.processosConhecidosAoSolicitarRecurso = -1;
         resource.liberar();
         Mensagem.clearReceivedMessages();
         Mensagem.resource(RESOURCE_RELEASE, this, resource);

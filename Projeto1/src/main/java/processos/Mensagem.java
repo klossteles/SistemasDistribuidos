@@ -203,16 +203,19 @@ public class Mensagem {
                     Recurso resourceOk = process.getRecursosDisponiveis().get(idResourceOk);
                     resourceOk.alocado();
                     Mensagem.clearReceivedMessages();
+                    process.wait = false;
                 }
                 break;
             case RESOURCE_DENIAL://O recurso não está disponível. Acorda a thread e adiciona na lista de espera.
                 Mensagem.incrementReceivedMessages();
-                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessages){
+                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessages){                    
                     Long idResourceNegado = json.getLong("id_resource");
                     Recurso resourceNegado = process.getRecursosDisponiveis().get(idResourceNegado);
                     json.put("id", process.getId());
+                    resourceNegado.setEstadoSolicitacao(WANTED);
                     resourceNegado.addProcessoSolicitante(json);
                     Mensagem.clearReceivedMessages();
+                    process.wait = false;
                 }
                 break;
         }
@@ -265,8 +268,12 @@ public class Mensagem {
         json.put("id_resource", resource.getId());
         json.put("message_type", type.getTypeCode());//Se é REQUEST ou RELEASE de um recurso.
 
-        if(type.equals(RESOURCE_RELEASE) && !resource.getProcessosSolicitantes().isEmpty()){
-            json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
+        if(type.equals(RESOURCE_RELEASE)){
+            if(resource.getProcessosSolicitantes().isEmpty()){
+                json.put("id_next_process", 0);
+            } else{
+                json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
+            }
         }
 
         byte[] data = json.toString().getBytes(Main.DEFAULT_ENCODING);
