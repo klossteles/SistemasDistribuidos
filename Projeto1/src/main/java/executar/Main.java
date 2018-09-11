@@ -9,35 +9,20 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import constantes.MessageType;
-import org.json.JSONObject;
 import processos.Mensagem;
 import processos.Process;
 
 import static constantes.ProcessResourceState.*;
 import java.nio.charset.Charset;
+import recursos.Recurso;
 
 public class Main {
-    /**
-     * Constantes para definir o estado de um Processo.
-     */
-//    private static final int RELEASED = 0;
-//    private static final int WANTED   = 1;
-//    private static final int HELD     = 2;
-    
-    public static final int TIMEOUT = 10000;//10 Segundos
-    
-    /**
-     * Constantes para definir eventos de entrada e saída no grupo multicast.
-     */
-//    public static final int IN_EVENT = 0;
-//    public static final int OUT_EVENT = 1;
+
+    public static final int TIMEOUT = 30000;//10 Segundos
 
     /**
      * Utilizado para definir o encoding do texto das mensagens enviadas.
@@ -45,30 +30,28 @@ public class Main {
      * trocadas.
      */
     public static final Charset DEFAULT_ENCODING = Charset.defaultCharset();
-    
+
     /**
      * Constantes para definir o IP do grupo multicast e a porta para conexão.
      */
     public static final String MULTICAST_IP = "233.5.6.10";
-    public static final int MULTICAST_PORT  = 6789;
-    
-    public static void main(String args[]) {
+    public static final int MULTICAST_PORT = 6789;
+
+    public static void main(String args[]){
         Process process = null;
-        try{
+        try {
             InetAddress group = InetAddress.getByName(MULTICAST_IP);
             MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
             process = new Process(RELEASED, group, socket);
             process.inicializar();
-        }catch (UnknownHostException e){
+            inicializarRecursosArbitrariamente(process);
+        } catch(UnknownHostException e) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
             throw new RuntimeException(e);
-        }catch (IOException e){
+        } catch(IOException e) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
             throw new RuntimeException(e);
         }
-
-        Scanner scan = new Scanner(System.in);
-        String option = "";
 
         Process finalProcess = process;
 //        Cria timer para buscar pelos processos vivos
@@ -78,18 +61,34 @@ public class Main {
             @Override
             public void run() {
                 Mensagem.announce(MessageType.ANNOUNCE, finalProcess);
-                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
+//                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
             }
         },0, TIMEOUT);
 
-        while (!option.equalsIgnoreCase("0")) {
+        menu(process);
+    }
+
+    /**
+     * Exibe e computa a opção escolhida pelo usuário no menu de opções de
+     * gerência de processos e recursos.
+     *
+     * @param process [Obrigatório] - Processo que irá sofrer as ações
+     * escolhidas pelo usuário.
+     */
+    private static void menu(Process process){
+        Scanner scan = new Scanner(System.in);
+        Scanner scanRecurso = new Scanner(System.in);
+        String option = "";
+        while(!option.equalsIgnoreCase("0")){
             System.out.println("0 - Sair");
             System.out.println("1 - Processos Conhecidos");
             System.out.println("2 - Quem sou eu");
+            System.out.println("3 - Solicitar recurso");
+            System.out.println("4 - Liberar recurso");
             System.out.println("O que deseja fazer?");
             option = scan.nextLine();
 
-            switch (option){
+            switch(option) {
                 case "0":
                     process.encerrar();
                     break;
@@ -99,10 +98,45 @@ public class Main {
                 case "2":
                     System.out.println("Meu id: " + process.whoAmI());
                     break;
+                case "3":
+                    exibirRecursos(process);
+                    System.out.println("Escolha o ID do recurso desejado: ");
+                    long idRecursoSolicitar = scanRecurso.nextLong();
+                    process.solicitarRecurso(idRecursoSolicitar);                    
+                    break;
+                case "4":
+                    exibirRecursos(process);
+                    System.out.println("Escolha o ID do recurso desejado: ");
+                    long idRecursoLiberar = scanRecurso.nextLong();
+                    process.liberarRecurso(idRecursoLiberar);
+                    break;
                 default:
                     System.err.println("Opção Indisponível");
                     break;
             }
         }
+    }
+
+    /**
+     * Inicializa arbitrariamente dois recursos, utilizados para testar a
+     * coordenação de recursos entre os processos.
+     *
+     * @param process [Obrigatório] - Processo que irá receber os dois processos
+     * arbitrários.
+     */
+    private static void inicializarRecursosArbitrariamente(Process process){
+        Recurso recurso1 = new Recurso(1, RELEASED, Instant.now());
+        Recurso recurso2 = new Recurso(2, RELEASED, Instant.now());
+
+        process.getRecursosDisponiveis().put(1L, recurso1);
+        process.getRecursosDisponiveis().put(2L, recurso2);
+    }
+    
+    private static void exibirRecursos(Process process){
+        System.out.println("====================================");
+        for(Map.Entry<Long, Recurso> recurso : process.getRecursosDisponiveis().entrySet()){
+            System.out.printf("ID: %d - STATE: %s %s", recurso.getKey(), recurso.getValue().getEstadoSolicitacao().name(), System.lineSeparator());
+        }
+        System.out.println("====================================");
     }
 }

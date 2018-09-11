@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 import constantes.ProcessResourceState;
+import java.time.Instant;
 
 /**
- *
+ * Representa um recurso que pode ser solicitado por um Processo.
  * @author Brendon
  */
 public class Recurso {
+    //Identificador do recurso, utilizado para requisitar um recurso específico.
     private final int id;
     
     /**
@@ -23,14 +25,19 @@ public class Recurso {
     private ProcessResourceState estadoSolicitacao;
     
     /**
+     * Identifica o momento que o recurso foi solicitado pelo Processo que o armazena.
+     */
+    private Instant momentoSolicitacao;
+    /**
      * Fila de Processos que solicitaram o uso deste recurso.
      * O JSON possui o ID do Processo e o timestamp da solicitação do recurso.
      */
     private final List<JSONObject> processosSolicitantes;
 
-    public Recurso(int id, ProcessResourceState state){
+    public Recurso(int id, ProcessResourceState state, Instant instant){
         this.id = id;
         this.estadoSolicitacao = state;
+        this.momentoSolicitacao = instant;
         this.processosSolicitantes = new ArrayList<>();
     }
 
@@ -42,14 +49,14 @@ public class Recurso {
         return estadoSolicitacao;
     }
 
+    public Instant getMomentoSolicitacao(){
+        return momentoSolicitacao;
+    }
+
     public List<JSONObject> getProcessosSolicitantes(){
         return processosSolicitantes;
     }
 
-    public void setEstadoSolicitacao(ProcessResourceState estadoSolicitacao){
-        this.estadoSolicitacao = estadoSolicitacao;
-    }
-    
     /**
      * Adiciona um Processo ao fim da fila de solicitantes.
      * @param process 
@@ -64,12 +71,27 @@ public class Recurso {
     
     /**
      * Remove o primeiro Processo da fila de solicitantes.
+     * @return 
      */
-    public void removeProcessoSolicitante(){
+    public JSONObject removeProcessoSolicitante(){
         if(this.processosSolicitantes.isEmpty()){
-            return;
+            return null;
         }
         
-        this.processosSolicitantes.remove(0);
-    }    
+        return this.processosSolicitantes.remove(0);
+    }
+    
+    public void solicitar(){
+        this.estadoSolicitacao = ProcessResourceState.WANTED;
+        this.momentoSolicitacao = Instant.now();
+    }
+    
+    public void liberar(){
+        this.estadoSolicitacao = ProcessResourceState.RELEASED;
+        this.momentoSolicitacao = Instant.MAX;
+    }
+    
+    public void alocado(){
+        this.estadoSolicitacao = ProcessResourceState.HELD;
+    }
 }

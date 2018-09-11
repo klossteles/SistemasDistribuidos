@@ -5,7 +5,10 @@
  */
 package processos;
 
+import static constantes.ProcessResourceState.*;
+import static constantes.MessageType.*;
 import constantes.MessageType;
+import constantes.ProcessResourceState;
 import criptografia.RSA;
 import executar.Main;
 import java.io.IOException;
@@ -26,6 +29,17 @@ import recursos.Recurso;
  */
 public class Mensagem {
 
+    private static final Logger LOG = Logger.getLogger(Process.class.getName());
+    private static int receivedMessages = 0;
+
+    public static void incrementReceivedMessages(){
+        Mensagem.receivedMessages++;
+    }
+
+    public static void clearReceivedMessages(){
+        Mensagem.receivedMessages = 0;
+    }
+
     /**
      * Envia um DatagramPacket anunciando a entrada ou saída do atual processo
      * no grupo multicast em que está vinculado.
@@ -45,8 +59,8 @@ public class Mensagem {
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
-                public void run() {
-                    Logger.getLogger(Process.class.getName()).log(Level.INFO, "Verificando quem respondeu");
+                public void run(){
+//                    LOG.info("Verificando quem respondeu");
                     for(Map.Entry<Long, JSONObject> entry : process.getProcessosConhecidos().entrySet()){
                         JSONObject jsonObject = entry.getValue();
                         if(jsonObject.get("obteve_resposta").equals(0)){
@@ -56,7 +70,16 @@ public class Mensagem {
                 }
             }, Main.TIMEOUT);
         } catch(IOException ex) {
-            Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void resource(final MessageType requestOrRelease, Process process, Recurso resource){
+        try {
+            DatagramPacket resourcePacket = createResourceDatagram(requestOrRelease, process, resource);
+            process.getSocket().send(resourcePacket);
+        } catch(IOException ex) {
+            Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -88,7 +111,8 @@ public class Mensagem {
      * <td>Emissor é removido da lista de pares conhecidos</td>
      * </tr>
      * <tr>
-     * <td>TIPO_EVENTO == (Evento de anúncio) &amp;&amp; Marca processo conhecido como ativo</td>
+     * <td>TIPO_EVENTO == (Evento de anúncio) &amp;&amp; Marca processo
+     * conhecido como ativo</td>
      * </tr>
      * </table>
      *
@@ -99,43 +123,97 @@ public class Mensagem {
     public static void tratarMensagemRecebida(DatagramPacket datagram, Process process){
         String mensagem = new String(datagram.getData(), Main.DEFAULT_ENCODING);
         JSONObject json = new JSONObject(mensagem);
-        
+
         Long idRecebido = json.getLong("id");
         MessageType groupEventRecebido = MessageType.getTypeByCode(json.getInt("message_type"));
-        
-        JSONObject js = new JSONObject(json.getString("json"));
-        PublicKey publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
-        
+
+        JSONObject js = null;
+        PublicKey publicKeyRecebida = null;
+
         if(idRecebido.equals(process.getId())){
             return;
         }
+
         switch(groupEventRecebido) {
             case GROUP_IN:
                 //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
+                js = new JSONObject(json.getString("json"));
+                publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
+
                 if(!process.getProcessosConhecidos().containsKey(idRecebido)){
                     //                    processosConhecidos.putIfAbsent(idRecebido, publicKeyRecebida);
                     process.getProcessosConhecidos().putIfAbsent(idRecebido, js);
                     Mensagem.announce(MessageType.GROUP_IN, process);
-                    Logger.getLogger(Process.class.getName()).log(Level.INFO, "Inseriu:{0}", idRecebido);
+                    LOG.log(Level.INFO, "Inseriu:{0}", idRecebido);
                 }
                 setObteveResposta(idRecebido, 1, process);
                 break;
+
             case GROUP_OUT:
                 //Se evento de saída, o par recebido é removido do conjunto de pares conhecidos.
                 process.getProcessosConhecidos().remove(idRecebido);
-                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Removeu:{0}", idRecebido);
+                LOG.log(Level.INFO, "Removeu:{0}", idRecebido);
                 break;
-            case RESOURCE_REQUEST:
-                break;
-            case RESOURCE_RELEASE:
-                break;
+
             case ANNOUNCE:
-                if (!process.getProcessosConhecidos().containsKey(idRecebido)){
+                js = new JSONObject(json.getString("json"));
+                publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
+
+                if(!process.getProcessosConhecidos().containsKey(idRecebido)){
                     process.getProcessosConhecidos().putIfAbsent(idRecebido, js);
-                    Logger.getLogger(Process.class.getName()).log(Level.INFO, "Inseriu:{0}", idRecebido);
+//                    LOG.log(Level.INFO, "Inseriu:{0}", idRecebido);
                 }
                 setObteveResposta(idRecebido, 1, process);
-                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Se Anunciou:{0}", idRecebido);
+//                LOG.log(Level.INFO, "Se Anunciou:{0}", idRecebido);
+                break;
+
+            case RESOURCE_REQUEST:
+                Long idResourceRequest = json.getLong("id_resource");
+                Long requestTime = json.getLong("request_time");
+
+                Recurso resourceSolicitado = process.getRecursosDisponiveis().get(idResourceRequest);
+                ProcessResourceState stateLocal = resourceSolicitado.getEstadoSolicitacao();
+                long requestTimeLocal = resourceSolicitado.getMomentoSolicitacao().getEpochSecond();
+
+                if(stateLocal.equals(HELD)
+                        || (stateLocal.equals(WANTED) && requestTimeLocal < requestTime)){
+                    Mensagem.resource(RESOURCE_DENIAL, process, resourceSolicitado);
+                    resourceSolicitado.addProcessoSolicitante(json);
+                } else{
+                    Mensagem.resource(RESOURCE_OK, process, resourceSolicitado);
+                }
+                break;
+
+            case RESOURCE_RELEASE:
+                Long idResourceRelease = json.getLong("id_resource");
+                Long idNextProcess = json.getLong("id_next_process");
+
+                Recurso resourceLiberado = process.getRecursosDisponiveis().get(idResourceRelease);
+                resourceLiberado.liberar();
+
+                if(idNextProcess == process.getId()){
+                    resourceLiberado.alocado();
+                }
+                break;
+
+            case RESOURCE_OK://O recurso solicitado está disponível. Acorda thread.
+                Mensagem.incrementReceivedMessages();
+                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessages){
+                    Long idResourceOk = json.getLong("id_resource");
+                    Recurso resourceOk = process.getRecursosDisponiveis().get(idResourceOk);
+                    resourceOk.alocado();
+                    Mensagem.clearReceivedMessages();
+                }
+                break;
+            case RESOURCE_DENIAL://O recurso não está disponível. Acorda a thread e adiciona na lista de espera.
+                Mensagem.incrementReceivedMessages();
+                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessages){
+                    Long idResourceNegado = json.getLong("id_resource");
+                    Recurso resourceNegado = process.getRecursosDisponiveis().get(idResourceNegado);
+                    json.put("id", process.getId());
+                    resourceNegado.addProcessoSolicitante(json);
+                    Mensagem.clearReceivedMessages();
+                }
                 break;
         }
     }
@@ -182,10 +260,14 @@ public class Mensagem {
 
     private static DatagramPacket createResourceDatagram(final MessageType type, Process process, Recurso resource){
         JSONObject json = new JSONObject();
-        json.put("id_process", process.getId());
-        json.put("request_time", Instant.now().getEpochSecond());
+        json.put("id", process.getId());//Identificador do rementente.
+        json.put("request_time", Instant.now().getEpochSecond());//Indicação de tempo do remetente.
         json.put("id_resource", resource.getId());
-        json.put("message_type", type.getTypeCode());
+        json.put("message_type", type.getTypeCode());//Se é REQUEST ou RELEASE de um recurso.
+
+        if(type.equals(RESOURCE_RELEASE) && !resource.getProcessosSolicitantes().isEmpty()){
+            json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
+        }
 
         byte[] data = json.toString().getBytes(Main.DEFAULT_ENCODING);
         return new DatagramPacket(data, data.length, process.getGroup(), Main.MULTICAST_PORT);

@@ -6,7 +6,7 @@
 package constantes;
 
 /**
- *
+ * 
  * @author Brendon
  */
 public enum MessageType {
@@ -15,7 +15,9 @@ public enum MessageType {
     GROUP_OUT(1),
     RESOURCE_REQUEST(2),
     RESOURCE_RELEASE(3),
-    ANNOUNCE(4);
+    ANNOUNCE(4),
+    RESOURCE_OK(5),
+    RESOURCE_DENIAL(6);
 
     private final int typeCode;
 

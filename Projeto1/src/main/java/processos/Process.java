@@ -1,6 +1,6 @@
 package processos;
 
-import constantes.ProcessResourceState;
+import static constantes.ProcessResourceState.*;
 import executar.Main;
 import criptografia.RSA;
 import java.io.IOException;
@@ -21,26 +21,28 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import recursos.Recurso;
 import static constantes.MessageType.*;
+import constantes.ProcessResourceState;
 
 public class Process extends Thread {
 
     private final long id;
-    private ProcessResourceState state;
     private final PublicKey publicKey;
     private final PrivateKey privateKey;
     private final MulticastSocket socket;
     private final InetAddress group;
     private final ConcurrentHashMap<Long, JSONObject> processosConhecidos;
-    private final Map<Long, Recurso> recursos;
+    private final Map<Long, Recurso> recursosDisponiveis;
 
+    private static final Logger LOG = Logger.getLogger(Process.class.getName());
+    private int processosConhecidosAoSolicitarRecurso = 0;
+    
     public Process(ProcessResourceState state, InetAddress group, MulticastSocket socket){
         //Utiliza como ID o instante em que o Processo foi criado, utilizando o Epoch.
         this.id = Instant.now().toEpochMilli();
-        this.state = state;
         this.socket = socket;
         this.group = group;
         this.processosConhecidos = new ConcurrentHashMap<>();
-        this.recursos = new HashMap<>();
+        this.recursosDisponiveis = new HashMap<>();
 
         KeyPair kp = RSA.gerarChavePublicaPrivada();
         this.publicKey = kp.getPublic();
@@ -68,8 +70,12 @@ public class Process extends Thread {
         return processosConhecidos;
     }
 
-    public void setState(ProcessResourceState state){
-        this.state = state;
+    public Map<Long, Recurso> getRecursosDisponiveis(){
+        return recursosDisponiveis;
+    }
+
+    public int getProcessosConhecidosAoSolicitarRecurso(){
+        return processosConhecidosAoSolicitarRecurso;
     }
 
     /**
@@ -141,7 +147,7 @@ public class Process extends Thread {
             socket.joinGroup(group);
             return true;
         } catch(IOException ex) {
-            Logger.getLogger(Process.class.getName()).log(Level.SEVERE, "Falha ao tentar acessar grupo multicast.", ex);
+            LOG.log(Level.SEVERE, "Falha ao tentar acessar grupo multicast.", ex);
             return false;
         }
     }
@@ -157,9 +163,75 @@ public class Process extends Thread {
             socket.leaveGroup(group);
             return true;
         } catch(IOException ex) {
-            Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+
+    /**
+     * Solicita um recurso representado pelo ID recebido por parâmetro. A
+     * solicitação é feita através de uma mensagem do tipo
+     * {@link constantes.MessageType} RESOURCE_REQUEST no grupo multicast.
+     *
+     * @param idRecurso [Obrigatório] - ID do recurso que se deseja solicitar o
+     * uso exclusivo.
+     * @return
+     */
+    public boolean solicitarRecurso(long idRecurso){
+        if(idRecurso < 1 || !this.recursosDisponiveis.containsKey(idRecurso)){
+            LOG.warning(String.format("O recurso de ID '%d' não existe.", idRecurso));
+            return false;
+        }
+
+        Recurso resource = this.recursosDisponiveis.get(idRecurso);
+        ProcessResourceState localState = resource.getEstadoSolicitacao();
+        if(localState.equals(WANTED) || localState.equals(HELD)){
+            LOG.warning(String.format("O recurso de ID '%d' já foi solicitado.", idRecurso));
+            return false;
+        }
+
+        resource.solicitar();
+        this.processosConhecidosAoSolicitarRecurso = this.processosConhecidos.size();
+
+        if(this.processosConhecidosAoSolicitarRecurso == 0){
+            resource.alocado();
+            LOG.info(String.format("O recurso de ID '%d' foi alocado.", idRecurso));
+            return true;
+        }
+
+        Mensagem.clearReceivedMessages();
+        Mensagem.resource(RESOURCE_REQUEST, this, resource);
+        LOG.info(String.format("O recurso de ID '%d' foi solicitado pelo processo '%s'.", idRecurso, this.id));
+        return true;
+    }
+
+    /**
+     * Libera um recurso representado pelo ID recebido por parâmetro. A
+     * liberação é feita através de uma mensagem do tipo
+     * {@link constantes.MessageType} RESOURCE_RELEASE no grupo multicast.
+     *
+     * @param idRecurso [Obrigatório] - ID do recurso que se deseja liberar o
+     * uso exclusivo.
+     * @return
+     */
+    public boolean liberarRecurso(long idRecurso){
+        if(idRecurso < 1 || !this.recursosDisponiveis.containsKey(idRecurso)){
+            LOG.warning(String.format("O recurso de ID '%d' não existe.", idRecurso));
+            return false;
+        }
+
+        Recurso resource = this.recursosDisponiveis.get(idRecurso);
+        if(!resource.getEstadoSolicitacao().equals(HELD)){
+            LOG.warning(String.format("O recurso de ID '%d' não está alocado para o processo '%d'.", idRecurso, this.id));
+            return false;
+        }
+
+        resource.liberar();
+        Mensagem.clearReceivedMessages();
+        Mensagem.resource(RESOURCE_RELEASE, this, resource);
+        LOG.info(String.format("O recurso de ID '%d' foi liberado.", idRecurso));
+
+        return true;
     }
 
     /**
@@ -179,7 +251,7 @@ public class Process extends Thread {
             } catch(SocketTimeoutException ste) {
                 Mensagem.trataTimeOut(this);
             } catch(IOException ex) {
-                Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, null, ex);
             }
         }
     }
