@@ -189,7 +189,6 @@ public class Mensagem {
                 Long idNextProcess = json.getLong("id_next_process");
 
                 Recurso resourceLiberado = process.getRecursosDisponiveis().get(idResourceRelease);
-                resourceLiberado.liberar();
 
                 if(idNextProcess == process.getId()){
                     resourceLiberado.alocado();
