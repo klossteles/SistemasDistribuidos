@@ -20,6 +20,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import recursos.Recurso;
 
@@ -30,15 +31,36 @@ import recursos.Recurso;
 public class Mensagem {
 
     private static final Logger LOG = Logger.getLogger(Process.class.getName());
-    private static int receivedMessages = 0;
+    private static int receivedMessagesOk = 0;
+    private static int receivedMessagesDenial = 0;
 
-    public static void incrementReceivedMessages(){
-        Mensagem.receivedMessages++;
-    }
-
+    //Métodos úteis para contabilizar a quantidade de respostas positivas (OK) e
+    //negativas (DENIAL) que foram recebidas no atual process.
     public static void clearReceivedMessages(){
-        Mensagem.receivedMessages = 0;
+        Mensagem.receivedMessagesOk = 0;
+        Mensagem.receivedMessagesDenial = 0;
     }
+
+    public static int getReceivedMessages(){
+        return Mensagem.receivedMessagesOk + Mensagem.receivedMessagesDenial;
+    }
+
+    public static void incrementReceivedMessagesOK(){
+        Mensagem.receivedMessagesOk++;
+    }
+
+    public static void clearReceivedMessagesOK(){
+        Mensagem.receivedMessagesOk = 0;
+    }
+
+    public static void incrementReceivedMessagesDenial(){
+        Mensagem.receivedMessagesDenial++;
+    }
+
+    public static void clearReceivedMessagesDenial(){
+        Mensagem.receivedMessagesDenial = 0;
+    }
+    //=========================================================================
 
     /**
      * Envia um DatagramPacket anunciando a entrada ou saída do atual processo
@@ -46,8 +68,9 @@ public class Mensagem {
      *
      * @param type [Obrigatório] - Se GROUP_IN, representa um anúncio de entrada
      * no grupo multicast. Se GROUP_OUT, representa um anúncio de saída do grupo
-     * multicast.
-     * @param process
+     * multicast. Se ANNOUNCE, representa um anúncio de atualização de processos
+     * do grupo multicast.
+     * @param process [Obrigatório] - Processo que está fazendo o anúncio (REMETENTE).
      */
     public static void announce(final MessageType type, Process process){
         try {
@@ -74,9 +97,18 @@ public class Mensagem {
         }
     }
 
-    public static void resource(final MessageType requestOrRelease, Process process, Recurso resource){
+    /**
+     * Envia um DatagramPacket no grupo multicast, solicitando/liberando um recurso
+     * ou respondendo a requisição de recurso feita por um processo externo.
+     * 
+     * @param requestReleaseOkDenial [Obrigatório] - Tipo de operação que será
+     * aplicada ao recurso em análise.
+     * @param process [Obrigatório] - Processo que irá fazer o anúncio de recurso.
+     * @param resource [Obrigatório] - Recurso que está sendo gerenciado.
+     */
+    public static void resource(final MessageType requestReleaseOkDenial, Process process, Recurso resource){
         try {
-            DatagramPacket resourcePacket = createResourceDatagram(requestOrRelease, process, resource);
+            DatagramPacket resourcePacket = createResourceDatagram(requestReleaseOkDenial, process, resource);
             process.getSocket().send(resourcePacket);
         } catch(IOException ex) {
             Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
@@ -118,7 +150,8 @@ public class Mensagem {
      *
      * @param datagram [Obrigatório] - DatagramPacket contendo a mensagem
      * recebida.
-     * @param process
+     * @param process [Obrigatório] - O processo que está analisando a resposta
+     * recebida.
      */
     public static void tratarMensagemRecebida(DatagramPacket datagram, Process process){
         String mensagem = new String(datagram.getData(), Main.DEFAULT_ENCODING);
@@ -168,6 +201,7 @@ public class Mensagem {
                 break;
 
             case RESOURCE_REQUEST:
+                LOG.info(String.format("RESOURCE_REQUEST recebido de '%d'", idRecebido));
                 Long idResourceRequest = json.getLong("id_resource");
                 Long requestTime = json.getLong("request_time");
 
@@ -175,8 +209,7 @@ public class Mensagem {
                 ProcessResourceState stateLocal = resourceSolicitado.getEstadoSolicitacao();
                 long requestTimeLocal = resourceSolicitado.getMomentoSolicitacao().getEpochSecond();
 
-                if(stateLocal.equals(HELD)
-                        || (stateLocal.equals(WANTED) && requestTimeLocal < requestTime)){
+                if(stateLocal.equals(HELD) || (stateLocal.equals(WANTED) && requestTimeLocal < requestTime)){
                     Mensagem.resource(RESOURCE_DENIAL, process, resourceSolicitado);
                     resourceSolicitado.addProcessoSolicitante(json);
                 } else{
@@ -185,37 +218,46 @@ public class Mensagem {
                 break;
 
             case RESOURCE_RELEASE:
+                LOG.info(String.format("RESOURCE_RELEASE recebido de '%d'", idRecebido));
                 Long idResourceRelease = json.getLong("id_resource");
                 Long idNextProcess = json.getLong("id_next_process");
-
+                JSONArray listaEspera = json.getJSONArray("waiting_list");
+                
                 Recurso resourceLiberado = process.getRecursosDisponiveis().get(idResourceRelease);
 
                 if(idNextProcess == process.getId()){
+                    resourceLiberado.carregarWaitingList(listaEspera);
                     resourceLiberado.alocado();
                 }
                 break;
 
             case RESOURCE_OK://O recurso solicitado está disponível. Acorda thread.
-                Mensagem.incrementReceivedMessages();
-                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessages){
-                    Long idResourceOk = json.getLong("id_resource");
+                Mensagem.incrementReceivedMessagesOK();
+                LOG.info(String.format("RESOURCE_OK recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), Mensagem.receivedMessagesOk));
+                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessagesOk){
+                    Long idResourceOk = json.getLong("id_resource");                    
                     Recurso resourceOk = process.getRecursosDisponiveis().get(idResourceOk);
-                    resourceOk.alocado();
-                    Mensagem.clearReceivedMessages();
-                    process.wait = false;
+                    if(resourceOk.getEstadoSolicitacao().equals(WANTED)){
+                        resourceOk.alocado();
+                        Mensagem.clearReceivedMessages();
+                    }
                 }
                 break;
             case RESOURCE_DENIAL://O recurso não está disponível. Acorda a thread e adiciona na lista de espera.
-                Mensagem.incrementReceivedMessages();
-                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessages){                    
-                    Long idResourceNegado = json.getLong("id_resource");
-                    Recurso resourceNegado = process.getRecursosDisponiveis().get(idResourceNegado);
-                    json.put("id", process.getId());
-                    resourceNegado.setEstadoSolicitacao(WANTED);
-                    resourceNegado.addProcessoSolicitante(json);
+                Mensagem.incrementReceivedMessagesDenial();
+                LOG.info(String.format("RESOURCE_DENIAL recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), Mensagem.receivedMessagesOk));
+
+                Long idResourceNegado = json.getLong("id_resource");
+                Recurso resourceNegado = process.getRecursosDisponiveis().get(idResourceNegado);
+                
+                /* Se tal recurso foi solicitado por mim (WANTED), foi negado, mas 
+                 * sou o proximo na fila.
+                 */
+                if(resourceNegado.souOProximo(process)){
                     Mensagem.clearReceivedMessages();
-                    process.wait = false;
+                    LOG.info(String.format("O recurso '%d' foi negado, mas sou o próximo na fila.", idResourceNegado));
                 }
+
                 break;
         }
     }
@@ -260,19 +302,30 @@ public class Mensagem {
         return new DatagramPacket(data, data.length, process.getGroup(), Main.MULTICAST_PORT);
     }
 
+    /**
+     * Cria um objeto DatagramPacket utilizado para fazer a requisição de um 
+     * recurso ou responder a requisição de um recurso por outro processo.
+     * 
+     * @param type [Obrigatório] - Tipo de operação que será aplicada ao recurso 
+     * em análise.
+     * @param process [Obrigatório] - Processo que irá fazer o anúncio de recurso.
+     * @param resource [Obrigatório] - Recurso que está sendo gerenciado.
+     * @return 
+     */
     private static DatagramPacket createResourceDatagram(final MessageType type, Process process, Recurso resource){
         JSONObject json = new JSONObject();
         json.put("id", process.getId());//Identificador do rementente.
         json.put("request_time", Instant.now().getEpochSecond());//Indicação de tempo do remetente.
         json.put("id_resource", resource.getId());
-        json.put("message_type", type.getTypeCode());//Se é REQUEST ou RELEASE de um recurso.
+        json.put("message_type", type.getTypeCode());
 
-        if(type.equals(RESOURCE_RELEASE)){
-            if(resource.getProcessosSolicitantes().isEmpty()){
-                json.put("id_next_process", 0);
-            } else{
-                json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
-            }
+        switch(type) {
+            case RESOURCE_RELEASE:
+                if(!resource.getProcessosSolicitantes().isEmpty()){
+                    json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
+                    json.put("waiting_list", resource.waitingListToString());
+                }
+                break;
         }
 
         byte[] data = json.toString().getBytes(Main.DEFAULT_ENCODING);
@@ -283,8 +336,10 @@ public class Mensagem {
      * Troca o valor de obteve_repsosta (json) para o valor passado
      *
      * @param processId type [Obrigatório] - Processo que respondeu
-     * @param value type [Obrigatório] - Valor que será trocado (0 - não respondeu, 1 - respondeu)
-     * @param process type [Obrigatório] - Processo que será trocado o obteve_resposta
+     * @param value type [Obrigatório] - Valor que será trocado (0 - não
+     * respondeu, 1 - respondeu)
+     * @param process type [Obrigatório] - Processo que será trocado o
+     * obteve_resposta
      */
     private static void setObteveResposta(Long processId, int value, Process process){
         for(Map.Entry<Long, JSONObject> entry : process.getProcessosConhecidos().entrySet()){
