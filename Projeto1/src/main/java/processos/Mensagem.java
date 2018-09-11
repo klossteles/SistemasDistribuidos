@@ -140,8 +140,12 @@ public class Mensagem {
         }
     }
 
-    //TODO Está rolando uma exception de concorrencia na thread.
-    //TODO Também esta rolando a perda de um dos processos da lista de conhecidos.
+    /**
+     * Remove os processos conhecidos que não responderam.
+     *
+     * @param process type [Obrigatório] - Processo que serão removidos os
+     * processos que não responderam
+     */
     public static void trataTimeOut(Process process){
         for(Map.Entry<Long, JSONObject> entry : process.getProcessosConhecidos().entrySet()){
             JSONObject jsonObject = entry.getValue();
@@ -188,10 +192,11 @@ public class Mensagem {
     }
 
     /**
+     * Troca o valor de obteve_repsosta (json) para o valor passado
      *
-     * @param processId
-     * @param value
-     * @param process
+     * @param processId type [Obrigatório] - Processo que respondeu
+     * @param value type [Obrigatório] - Valor que será trocado (0 - não respondeu, 1 - respondeu)
+     * @param process type [Obrigatório] - Processo que será trocado o obteve_resposta
      */
     private static void setObteveResposta(Long processId, int value, Process process){
         for(Map.Entry<Long, JSONObject> entry : process.getProcessosConhecidos().entrySet()){
