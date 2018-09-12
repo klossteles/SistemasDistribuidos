@@ -62,6 +62,10 @@ public class Process extends Thread {
         return publicKey;
     }
 
+    public PublicKey getPrivateKey(){
+        return publicKey;
+    }
+
     public InetAddress getGroup(){
         return group;
     }
@@ -193,7 +197,7 @@ public class Process extends Thread {
         resource.solicitar();
         this.processosConhecidosAoSolicitarRecurso = this.processosConhecidos.size();
 
-        Mensagem.clearReceivedMessages();
+        resource.clearReceivedMessagesOK();
         Mensagem.resource(RESOURCE_REQUEST, this, resource);
 //        wait = true;
 //        while(wait);//espera ocupada. Faz a chamada solicitar ser bloqueante.
@@ -224,7 +228,7 @@ public class Process extends Thread {
 
         this.processosConhecidosAoSolicitarRecurso = -1;
         resource.liberar();
-        Mensagem.clearReceivedMessages();
+        resource.clearReceivedMessagesOK();
         Mensagem.resource(RESOURCE_RELEASE, this, resource);
         resource.getProcessosSolicitantes().clear();
         LOG.info(String.format("O recurso de ID '%d' foi liberado.", idRecurso));

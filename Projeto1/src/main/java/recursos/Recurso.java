@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import constantes.ProcessResourceState;
 import java.time.Instant;
 import org.json.JSONArray;
+import processos.Mensagem;
 
 /**
  * Representa um recurso que pode ser solicitado por um Processo.
@@ -39,6 +40,20 @@ public class Recurso {
      */
     private final List<JSONObject> processosSolicitantes;
 
+    /**
+     * Fila de Processo
+     */
+    private static int receivedMessagesOk = 0;
+
+    private static int receivedMessagesDenial = 0;
+
+    /**
+     * Construtor do Recurso
+     *
+     * @param id
+     * @param state
+     * @param instant
+     */
     public Recurso(int id, ProcessResourceState state, Instant instant){
         this.id = id;
         this.estadoSolicitacao = state;
@@ -166,5 +181,25 @@ public class Recurso {
         for(int indice = 0; indice < array.length(); indice++){
             this.processosSolicitantes.add(array.getJSONObject(indice));
         }
+    }
+
+    public static void incrementReceivedMessagesOK(){
+        receivedMessagesOk++;
+    }
+
+    public int getReceivedMessages(){
+        return receivedMessagesOk;
+    }
+
+    public void clearReceivedMessagesOK(){
+       receivedMessagesOk = 0;
+    }
+
+    public static void incrementReceivedMessagesDenial(){
+        receivedMessagesDenial++;
+    }
+
+    public static void clearReceivedMessagesDenial(){
+        receivedMessagesDenial = 0;
     }
 }

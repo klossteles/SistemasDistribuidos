@@ -50,7 +50,7 @@ public class RSA {
      *
      * @return [byte[]] contendo a mensagem criptografada.
      */
-    public static byte[] criptografar(Key key, String message){
+    public static String criptografar(Key key, String message, Charset encode){
         if(key == null || message == null){
             return null;
         }
@@ -66,7 +66,7 @@ public class RSA {
             Logger.getLogger(RSA.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return dadosCriptografados;
+        return new String(dadosCriptografados, encode);
     }
 
     /**

@@ -13,6 +13,7 @@ import criptografia.RSA;
 import executar.Main;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.security.Key;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Map;
@@ -31,35 +32,6 @@ import recursos.Recurso;
 public class Mensagem {
 
     private static final Logger LOG = Logger.getLogger(Process.class.getName());
-    private static int receivedMessagesOk = 0;
-    private static int receivedMessagesDenial = 0;
-
-    //Métodos úteis para contabilizar a quantidade de respostas positivas (OK) e
-    //negativas (DENIAL) que foram recebidas no atual process.
-    public static void clearReceivedMessages(){
-        Mensagem.receivedMessagesOk = 0;
-        Mensagem.receivedMessagesDenial = 0;
-    }
-
-    public static int getReceivedMessages(){
-        return Mensagem.receivedMessagesOk + Mensagem.receivedMessagesDenial;
-    }
-
-    public static void incrementReceivedMessagesOK(){
-        Mensagem.receivedMessagesOk++;
-    }
-
-    public static void clearReceivedMessagesOK(){
-        Mensagem.receivedMessagesOk = 0;
-    }
-
-    public static void incrementReceivedMessagesDenial(){
-        Mensagem.receivedMessagesDenial++;
-    }
-
-    public static void clearReceivedMessagesDenial(){
-        Mensagem.receivedMessagesDenial = 0;
-    }
     //=========================================================================
 
     /**
@@ -220,41 +192,48 @@ public class Mensagem {
             case RESOURCE_RELEASE:
                 LOG.info(String.format("RESOURCE_RELEASE recebido de '%d'", idRecebido));
                 Long idResourceRelease = json.getLong("id_resource");
-                Long idNextProcess = json.getLong("id_next_process");
-                JSONArray listaEspera = json.getJSONArray("waiting_list");
-                
+                Long idNextProcess = null;
+                JSONArray listaEspera = null;
+                if (json.has("id_next_process")) {
+                    idNextProcess = json.getLong("id_next_process");
+                }
+                if (json.has("waiting_list")) {
+                    listaEspera = json.getJSONArray("waiting_list");
+                }
+
                 Recurso resourceLiberado = process.getRecursosDisponiveis().get(idResourceRelease);
 
-                if(idNextProcess == process.getId()){
+                if (idNextProcess != null && idNextProcess == process.getId()) {
                     resourceLiberado.carregarWaitingList(listaEspera);
                     resourceLiberado.alocado();
                 }
                 break;
 
             case RESOURCE_OK://O recurso solicitado está disponível. Acorda thread.
-                Mensagem.incrementReceivedMessagesOK();
-                LOG.info(String.format("RESOURCE_OK recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), Mensagem.receivedMessagesOk));
-                if(process.getProcessosConhecidosAoSolicitarRecurso() == Mensagem.receivedMessagesOk){
-                    Long idResourceOk = json.getLong("id_resource");                    
-                    Recurso resourceOk = process.getRecursosDisponiveis().get(idResourceOk);
+                Long idResourceOk = json.getLong("id_resource");
+                Recurso resourceOk = process.getRecursosDisponiveis().get(idResourceOk);
+                resourceOk.incrementReceivedMessagesOK();
+                Key priateKey = process.getPrivateKey();
+                String str = RSA.descriptografar(priateKey, json.getString("mensagem").getBytes(Main.DEFAULT_ENCODING),Main.DEFAULT_ENCODING);
+                json = new JSONObject(str);
+                LOG.info(String.format("RESOURCE_OK recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceOk.getReceivedMessages()));
+                if(process.getProcessosConhecidosAoSolicitarRecurso() == resourceOk.getReceivedMessages()){
                     if(resourceOk.getEstadoSolicitacao().equals(WANTED)){
                         resourceOk.alocado();
-                        Mensagem.clearReceivedMessages();
+                        resourceOk.clearReceivedMessagesOK();
                     }
                 }
                 break;
             case RESOURCE_DENIAL://O recurso não está disponível. Acorda a thread e adiciona na lista de espera.
-                Mensagem.incrementReceivedMessagesDenial();
-                LOG.info(String.format("RESOURCE_DENIAL recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), Mensagem.receivedMessagesOk));
-
                 Long idResourceNegado = json.getLong("id_resource");
                 Recurso resourceNegado = process.getRecursosDisponiveis().get(idResourceNegado);
-                
-                /* Se tal recurso foi solicitado por mim (WANTED), foi negado, mas 
+                resourceNegado.incrementReceivedMessagesDenial();
+                LOG.info(String.format("RESOURCE_DENIAL recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceNegado.getReceivedMessages()));
+                /* Se tal recurso foi solicitado por mim (WANTED), foi negado, mas
                  * sou o proximo na fila.
                  */
                 if(resourceNegado.souOProximo(process)){
-                    Mensagem.clearReceivedMessages();
+                    resourceNegado.clearReceivedMessagesOK();
                     LOG.info(String.format("O recurso '%d' foi negado, mas sou o próximo na fila.", idResourceNegado));
                 }
 
@@ -318,17 +297,31 @@ public class Mensagem {
         json.put("request_time", Instant.now().getEpochSecond());//Indicação de tempo do remetente.
         json.put("id_resource", resource.getId());
         json.put("message_type", type.getTypeCode());
-
+        byte[] data = new byte[0];
         switch(type) {
             case RESOURCE_RELEASE:
                 if(!resource.getProcessosSolicitantes().isEmpty()){
                     json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
                     json.put("waiting_list", resource.waitingListToString());
                 }
+                data = json.toString().getBytes(Main.DEFAULT_ENCODING);
+                break;
+            case RESOURCE_OK:
+                JSONObject jsonOk = new JSONObject();
+                jsonOk.put("id", process.getId());
+                jsonOk.put("message_type", type.getTypeCode());
+                jsonOk.put("message", RSA.criptografar(process.getPrivateKey(), json.toString(), Main.DEFAULT_ENCODING));
+                data = jsonOk.toString().getBytes(Main.DEFAULT_ENCODING);
+                break;
+            case RESOURCE_DENIAL:
+                JSONObject jsonDenial = new JSONObject();
+                jsonDenial.put("id", process.getId());
+                jsonDenial.put("message_type", type.getTypeCode());
+                jsonDenial.put("message", RSA.criptografar(process.getPrivateKey(), json.toString(), Main.DEFAULT_ENCODING));
+                data = jsonDenial.toString().getBytes(Main.DEFAULT_ENCODING);
                 break;
         }
 
-        byte[] data = json.toString().getBytes(Main.DEFAULT_ENCODING);
         return new DatagramPacket(data, data.length, process.getGroup(), Main.MULTICAST_PORT);
     }
 
