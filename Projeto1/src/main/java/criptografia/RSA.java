@@ -118,7 +118,7 @@ public class RSA {
         try {
             KeyFactory factory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec spec = factory.getKeySpec(key, X509EncodedKeySpec.class);
-            LOG.info(String.format("publicKeyToString: %s", Base64.getEncoder().encodeToString(spec.getEncoded())));
+//            LOG.info(String.format("publicKeyToString: %s", Base64.getEncoder().encodeToString(spec.getEncoded())));
             return Base64.getEncoder().encodeToString(spec.getEncoded());
         } catch(NoSuchAlgorithmException | InvalidKeySpecException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -141,7 +141,7 @@ public class RSA {
     }
     
     public static PublicKey StringToPublicKey(String key){
-        LOG.info(String.format("StringToPublicKey: %s", key));
+//        LOG.info(String.format("StringToPublicKey: %s", key));
         try {
             byte[] data = Base64.getDecoder().decode(key);
             X509EncodedKeySpec spec = new X509EncodedKeySpec(data);

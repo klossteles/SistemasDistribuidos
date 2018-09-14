@@ -127,10 +127,10 @@ public class Mensagem {
      */
     public static void tratarMensagemRecebida(DatagramPacket datagram, Process process){
         String mensagem = new String(datagram.getData(), DEFAULT_ENCODING);
-        System.out.println("&&&&&&&&&&&&&" + mensagem);
+        System.out.println("2: " + mensagem);
         JSONObject json = new JSONObject(mensagem);
 
-        System.out.println("KEY: " + new JSONObject(json.getString("json")).getString("key"));
+//        System.out.println("KEY: " + new JSONObject(json.getString("json")).getString("key"));
         
         //Parte não criptografada do Datagrama.
         Long idProcessRecebido = json.getLong("id");
@@ -147,8 +147,10 @@ public class Mensagem {
         switch(groupEventRecebido) {
             case GROUP_IN:
                 //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
+                System.out.println("3: " + json.toString());
                 js = new JSONObject(json.getString("json"));
-                System.out.println("RECEBIDA: " + js.getString("key"));
+                System.out.println("4: " + js.toString());
+//                System.out.println("RECEBIDA: " + js.getString("key"));
                 publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
 
                 if(!process.getProcessosConhecidos().containsKey(idProcessRecebido)){
@@ -298,9 +300,9 @@ public class Mensagem {
         json.put("json", js.toString());
         json.put("message_type", type.getTypeCode());
         
-        System.out.println("========= " + json.toString());
+//        System.out.println("========= " + json.toString());
         byte[] data = json.toString().getBytes(DEFAULT_ENCODING);
-        System.out.println("ENVIANDO " + new String(data, DEFAULT_ENCODING));
+        System.out.println("1: " + new String(data, DEFAULT_ENCODING));
         return new DatagramPacket(data, data.length, process.getGroup(), MULTICAST_PORT);
     }
 
