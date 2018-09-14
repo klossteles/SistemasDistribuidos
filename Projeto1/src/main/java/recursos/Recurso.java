@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import constantes.ProcessResourceState;
 import java.time.Instant;
 import org.json.JSONArray;
-import processos.Mensagem;
 
 /**
  * Representa um recurso que pode ser solicitado por um Processo.
@@ -34,18 +33,20 @@ public class Recurso {
      * armazena.
      */
     private Instant momentoSolicitacao;
+    
     /**
      * Fila de Processos que solicitaram o uso deste recurso. O JSON possui o ID
      * do Processo e o timestamp da solicitação do recurso.
      */
     private final List<JSONObject> processosSolicitantes;
 
-    /**
-     * Fila de Processo
-     */
-    private static int receivedMessagesOk = 0;
 
-    private static int receivedMessagesDenial = 0;
+    /**
+     * Contados de mensagens recebidas. Utilizado para determinar se todos os
+     * processos conhecidos responderam a uma data mensagem enviada.
+     */
+    private int receivedMessagesOk = 0;
+    private int receivedMessagesDenial = 0;
 
     /**
      * Construtor do Recurso
@@ -183,7 +184,7 @@ public class Recurso {
         }
     }
 
-    public static void incrementReceivedMessagesOK(){
+    public void incrementReceivedMessagesOK(){
         receivedMessagesOk++;
     }
 
@@ -195,11 +196,11 @@ public class Recurso {
        receivedMessagesOk = 0;
     }
 
-    public static void incrementReceivedMessagesDenial(){
+    public void incrementReceivedMessagesDenial(){
         receivedMessagesDenial++;
     }
 
-    public static void clearReceivedMessagesDenial(){
+    public void clearReceivedMessagesDenial(){
         receivedMessagesDenial = 0;
     }
 }

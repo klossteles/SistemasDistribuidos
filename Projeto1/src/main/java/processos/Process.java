@@ -82,6 +82,10 @@ public class Process extends Thread {
         return processosConhecidosAoSolicitarRecurso;
     }
 
+    public PublicKey getPublicKeyFromAnotherProcess(Long idProcess){
+        return RSA.StringToPublicKey(this.getProcessosConhecidos().get(idProcess).getString("key"));
+    }   
+    
     /**
      * Inicializa o Process, executando os seguintes passos:
      * <ul>
@@ -112,6 +116,7 @@ public class Process extends Thread {
         Mensagem.announce(GROUP_OUT, this);
         leaveMulticastGroup();
         this.stop();
+        System.exit(0);
     }
 
     /**

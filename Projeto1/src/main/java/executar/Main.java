@@ -18,20 +18,22 @@ import processos.Process;
 
 import static constantes.ProcessResourceState.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.json.JSONObject;
 import recursos.Recurso;
 
 public class Main {
 
-    public static final int TIMEOUT = 30000;//10 Segundos
+    private static final Logger LOG = Logger.getLogger(Main.class.getName());
+    public static final int TIMEOUT = 30000;//30 Segundos
 
     /**
      * Utilizado para definir o encoding do texto das mensagens enviadas.
      * Necessário para efetuar a descriptografia adequada das mensagens
      * trocadas.
      */
-    public static final Charset DEFAULT_ENCODING = Charset.defaultCharset();
+    public static final Charset DEFAULT_ENCODING = StandardCharsets.ISO_8859_1;
 
     /**
      * Constantes para definir o IP do grupo multicast e a porta para conexão.
@@ -48,10 +50,10 @@ public class Main {
             process.inicializar();
             inicializarRecursosArbitrariamente(process);
         } catch(UnknownHostException e) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
+            LOG.log(Level.SEVERE, null, e);
             throw new RuntimeException(e);
         } catch(IOException e) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
+            LOG.log(Level.SEVERE, null, e);
             throw new RuntimeException(e);
         }
 
@@ -63,7 +65,7 @@ public class Main {
             @Override
             public void run(){
                 Mensagem.announce(MessageType.ANNOUNCE, finalProcess);
-//                Logger.getLogger(Process.class.getName()).log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
+//                LOG.log(Level.INFO, "Estou me anunciando: {0}", Instant.now());
             }
         }, 0, TIMEOUT);
 

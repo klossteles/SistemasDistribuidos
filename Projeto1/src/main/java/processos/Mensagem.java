@@ -7,15 +7,16 @@ package processos;
 
 import static constantes.ProcessResourceState.*;
 import static constantes.MessageType.*;
+import static executar.Main.*;
 import constantes.MessageType;
 import constantes.ProcessResourceState;
 import criptografia.RSA;
-import executar.Main;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.security.Key;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,8 +32,7 @@ import recursos.Recurso;
  */
 public class Mensagem {
 
-    private static final Logger LOG = Logger.getLogger(Process.class.getName());
-    //=========================================================================
+    private static final Logger LOG = Logger.getLogger(Mensagem.class.getName());
 
     /**
      * Envia um DatagramPacket anunciando a entrada ou saída do atual processo
@@ -63,7 +63,7 @@ public class Mensagem {
                         }
                     }
                 }
-            }, Main.TIMEOUT);
+            }, TIMEOUT);
         } catch(IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
@@ -83,7 +83,7 @@ public class Mensagem {
             DatagramPacket resourcePacket = createResourceDatagram(requestReleaseOkDenial, process, resource);
             process.getSocket().send(resourcePacket);
         } catch(IOException ex) {
-            Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -126,16 +126,21 @@ public class Mensagem {
      * recebida.
      */
     public static void tratarMensagemRecebida(DatagramPacket datagram, Process process){
-        String mensagem = new String(datagram.getData(), Main.DEFAULT_ENCODING);
+        String mensagem = new String(datagram.getData(), DEFAULT_ENCODING);
+        System.out.println("&&&&&&&&&&&&&" + mensagem);
         JSONObject json = new JSONObject(mensagem);
 
-        Long idRecebido = json.getLong("id");
+        System.out.println("KEY: " + new JSONObject(json.getString("json")).getString("key"));
+        
+        //Parte não criptografada do Datagrama.
+        Long idProcessRecebido = json.getLong("id");
         MessageType groupEventRecebido = MessageType.getTypeByCode(json.getInt("message_type"));
 
         JSONObject js = null;
         PublicKey publicKeyRecebida = null;
 
-        if(idRecebido.equals(process.getId())){
+        //Evita processar os pacotes do próprio remetente.
+        if(idProcessRecebido.equals(process.getId())){
             return;
         }
 
@@ -143,37 +148,38 @@ public class Mensagem {
             case GROUP_IN:
                 //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
                 js = new JSONObject(json.getString("json"));
+                System.out.println("RECEBIDA: " + js.getString("key"));
                 publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
 
-                if(!process.getProcessosConhecidos().containsKey(idRecebido)){
-                    //                    processosConhecidos.putIfAbsent(idRecebido, publicKeyRecebida);
-                    process.getProcessosConhecidos().putIfAbsent(idRecebido, js);
+                if(!process.getProcessosConhecidos().containsKey(idProcessRecebido)){
+                    //                    processosConhecidos.putIfAbsent(idProcessRecebido, publicKeyRecebida);
+                    process.getProcessosConhecidos().putIfAbsent(idProcessRecebido, js);
                     Mensagem.announce(MessageType.GROUP_IN, process);
-                    LOG.log(Level.INFO, "Inseriu:{0}", idRecebido);
+                    LOG.log(Level.INFO, "Inseriu:{0}", idProcessRecebido);
                 }
-                setObteveResposta(idRecebido, 1, process);
+                setObteveResposta(idProcessRecebido, 1, process);
                 break;
 
             case GROUP_OUT:
                 //Se evento de saída, o par recebido é removido do conjunto de pares conhecidos.
-                process.getProcessosConhecidos().remove(idRecebido);
-                LOG.log(Level.INFO, "Removeu:{0}", idRecebido);
+                process.getProcessosConhecidos().remove(idProcessRecebido);
+                LOG.log(Level.INFO, "Removeu:{0}", idProcessRecebido);
                 break;
 
             case ANNOUNCE:
                 js = new JSONObject(json.getString("json"));
                 publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
 
-                if(!process.getProcessosConhecidos().containsKey(idRecebido)){
-                    process.getProcessosConhecidos().putIfAbsent(idRecebido, js);
-//                    LOG.log(Level.INFO, "Inseriu:{0}", idRecebido);
+                if(!process.getProcessosConhecidos().containsKey(idProcessRecebido)){
+                    process.getProcessosConhecidos().putIfAbsent(idProcessRecebido, js);
+//                    LOG.log(Level.INFO, "Inseriu:{0}", idProcessRecebido);
                 }
-                setObteveResposta(idRecebido, 1, process);
-//                LOG.log(Level.INFO, "Se Anunciou:{0}", idRecebido);
+                setObteveResposta(idProcessRecebido, 1, process);
+//                LOG.log(Level.INFO, "Se Anunciou:{0}", idProcessRecebido);
                 break;
 
             case RESOURCE_REQUEST:
-                LOG.info(String.format("RESOURCE_REQUEST recebido de '%d'", idRecebido));
+                LOG.info(String.format("RESOURCE_REQUEST recebido de '%d'", idProcessRecebido));
                 Long idResourceRequest = json.getLong("id_resource");
                 Long requestTime = json.getLong("request_time");
 
@@ -190,7 +196,7 @@ public class Mensagem {
                 break;
 
             case RESOURCE_RELEASE:
-                LOG.info(String.format("RESOURCE_RELEASE recebido de '%d'", idRecebido));
+                LOG.info(String.format("RESOURCE_RELEASE recebido de '%d'", idProcessRecebido));
                 Long idResourceRelease = json.getLong("id_resource");
                 Long idNextProcess = null;
                 JSONArray listaEspera = null;
@@ -209,14 +215,20 @@ public class Mensagem {
                 }
                 break;
 
-            case RESOURCE_OK://O recurso solicitado está disponível. Acorda thread.
+            case RESOURCE_OK://O recurso solicitado está disponível.
                 Long idResourceOk = json.getLong("id_resource");
                 Recurso resourceOk = process.getRecursosDisponiveis().get(idResourceOk);
                 resourceOk.incrementReceivedMessagesOK();
-                Key priateKey = process.getPrivateKey();
-                String str = RSA.descriptografar(priateKey, json.getString("mensagem").getBytes(Main.DEFAULT_ENCODING),Main.DEFAULT_ENCODING);
-                json = new JSONObject(str);
-                LOG.info(String.format("RESOURCE_OK recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceOk.getReceivedMessages()));
+                LOG.info(String.format("RESOURCE_OK recebido de '%d'. (%d)//(%d)", idProcessRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceOk.getReceivedMessages()));
+                
+                //AUTENTICAÇÃO DE REMENTENTE
+                PublicKey publicKeyOk = process.getPublicKeyFromAnotherProcess(idProcessRecebido);
+                String assinaturaOk = RSA.descriptografar(publicKeyOk, json.getString("assinatura"), DEFAULT_ENCODING);
+                
+                if(!assinaturaOk.equals(RESOURCE_DENIAL.name())){
+                    LOG.severe(String.format("Falha de autenticação de Assinatura Digital do Processo Rementente %d", idProcessRecebido));
+                }
+                
                 if(process.getProcessosConhecidosAoSolicitarRecurso() == resourceOk.getReceivedMessages()){
                     if(resourceOk.getEstadoSolicitacao().equals(WANTED)){
                         resourceOk.alocado();
@@ -224,19 +236,28 @@ public class Mensagem {
                     }
                 }
                 break;
+                
             case RESOURCE_DENIAL://O recurso não está disponível. Acorda a thread e adiciona na lista de espera.
                 Long idResourceNegado = json.getLong("id_resource");
                 Recurso resourceNegado = process.getRecursosDisponiveis().get(idResourceNegado);
                 resourceNegado.incrementReceivedMessagesDenial();
-                LOG.info(String.format("RESOURCE_DENIAL recebido de '%d'. (%d)//(%d)", idRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceNegado.getReceivedMessages()));
+                LOG.info(String.format("RESOURCE_DENIAL recebido de '%d'. (%d)//(%d)", idProcessRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceNegado.getReceivedMessages()));
+                
+                //AUTENTICAÇÃO DE REMENTENTE
+                Key publicKeyDenial = process.getPublicKeyFromAnotherProcess(idProcessRecebido);
+                String assinaturaDenial = RSA.descriptografar(publicKeyDenial, json.getString("assinatura"), DEFAULT_ENCODING);
+                
+                if(!assinaturaDenial.equals(RESOURCE_DENIAL.name())){
+                    LOG.severe(String.format("Falha de autenticação de Assinatura Digital do Processo Rementente %d", idProcessRecebido));
+                }
+                
                 /* Se tal recurso foi solicitado por mim (WANTED), foi negado, mas
-                 * sou o proximo na fila.
+                 * estou na fila.
                  */
                 if(resourceNegado.souOProximo(process)){
                     resourceNegado.clearReceivedMessagesOK();
-                    LOG.info(String.format("O recurso '%d' foi negado, mas sou o próximo na fila.", idResourceNegado));
+                    LOG.info(String.format("O recurso '%d' foi negado, mas estou na fila.", idResourceNegado));
                 }
-
                 break;
         }
     }
@@ -276,9 +297,11 @@ public class Mensagem {
         json.put("id", process.getId());
         json.put("json", js.toString());
         json.put("message_type", type.getTypeCode());
-
-        byte[] data = json.toString().getBytes();
-        return new DatagramPacket(data, data.length, process.getGroup(), Main.MULTICAST_PORT);
+        
+        System.out.println("========= " + json.toString());
+        byte[] data = json.toString().getBytes(DEFAULT_ENCODING);
+        System.out.println("ENVIANDO " + new String(data, DEFAULT_ENCODING));
+        return new DatagramPacket(data, data.length, process.getGroup(), MULTICAST_PORT);
     }
 
     /**
@@ -297,32 +320,28 @@ public class Mensagem {
         json.put("request_time", Instant.now().getEpochSecond());//Indicação de tempo do remetente.
         json.put("id_resource", resource.getId());
         json.put("message_type", type.getTypeCode());
-        byte[] data = new byte[0];
+        
         switch(type) {
             case RESOURCE_RELEASE:
                 if(!resource.getProcessosSolicitantes().isEmpty()){
                     json.put("id_next_process", resource.removeProcessoSolicitante().get("id"));
                     json.put("waiting_list", resource.waitingListToString());
-                }
-                data = json.toString().getBytes(Main.DEFAULT_ENCODING);
+                }                
                 break;
+                
+            /* Caso seja uma resposta a uma dada requisição de recurso, um campo
+                de assinatura é inserido no JSON, para que seja possível autenticar
+                a origem da mensagem. Apenas esse campo é criptografado.
+            */
             case RESOURCE_OK:
-                JSONObject jsonOk = new JSONObject();
-                jsonOk.put("id", process.getId());
-                jsonOk.put("message_type", type.getTypeCode());
-                jsonOk.put("message", RSA.criptografar(process.getPrivateKey(), json.toString(), Main.DEFAULT_ENCODING));
-                data = jsonOk.toString().getBytes(Main.DEFAULT_ENCODING);
-                break;
             case RESOURCE_DENIAL:
-                JSONObject jsonDenial = new JSONObject();
-                jsonDenial.put("id", process.getId());
-                jsonDenial.put("message_type", type.getTypeCode());
-                jsonDenial.put("message", RSA.criptografar(process.getPrivateKey(), json.toString(), Main.DEFAULT_ENCODING));
-                data = jsonDenial.toString().getBytes(Main.DEFAULT_ENCODING);
+                json.put("assinatura", RSA.criptografar(process.getPrivateKey(), type.name(), DEFAULT_ENCODING));
+                System.out.println(json.toString());
                 break;
         }
-
-        return new DatagramPacket(data, data.length, process.getGroup(), Main.MULTICAST_PORT);
+        
+        byte[] data = json.toString().getBytes(DEFAULT_ENCODING);
+        return new DatagramPacket(data, data.length, process.getGroup(), MULTICAST_PORT);
     }
 
     /**
