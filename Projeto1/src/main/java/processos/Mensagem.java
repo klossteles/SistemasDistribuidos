@@ -13,6 +13,7 @@ import constantes.ProcessResourceState;
 import criptografia.RSA;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.PublicKey;
 import java.time.Instant;
@@ -127,11 +128,8 @@ public class Mensagem {
      */
     public static void tratarMensagemRecebida(DatagramPacket datagram, Process process){
         String mensagem = new String(datagram.getData(), DEFAULT_ENCODING);
-        System.out.println("2: " + mensagem);
         JSONObject json = new JSONObject(mensagem);
 
-//        System.out.println("KEY: " + new JSONObject(json.getString("json")).getString("key"));
-        
         //Parte não criptografada do Datagrama.
         Long idProcessRecebido = json.getLong("id");
         MessageType groupEventRecebido = MessageType.getTypeByCode(json.getInt("message_type"));
@@ -147,10 +145,7 @@ public class Mensagem {
         switch(groupEventRecebido) {
             case GROUP_IN:
                 //Se evento de entrada, o par recebido é inserido no conjunto de pares conhecidos.
-                System.out.println("3: " + json.toString());
                 js = new JSONObject(json.getString("json"));
-                System.out.println("4: " + js.toString());
-//                System.out.println("RECEBIDA: " + js.getString("key"));
                 publicKeyRecebida = RSA.StringToPublicKey(js.getString("key"));
 
                 if(!process.getProcessosConhecidos().containsKey(idProcessRecebido)){
@@ -225,10 +220,17 @@ public class Mensagem {
                 
                 //AUTENTICAÇÃO DE REMENTENTE
                 PublicKey publicKeyOk = process.getPublicKeyFromAnotherProcess(idProcessRecebido);
-                String assinaturaOk = RSA.descriptografar(publicKeyOk, json.getString("assinatura"), DEFAULT_ENCODING);
+                String assinaturaOk = "";
+                if(publicKeyOk != null){
+                    assinaturaOk = RSA.descriptografar(publicKeyOk, json.getString("assinatura"), DEFAULT_ENCODING);
+                }else{
+                    LOG.severe(String.format("O Remetente da mensagem '%d' não está mais Online. Não é possível autenticar. ", idProcessRecebido));
+                    break;
+                }
                 
-                if(!assinaturaOk.equals(RESOURCE_DENIAL.name())){
+                if(!assinaturaOk.equals(RESOURCE_OK.name())){
                     LOG.severe(String.format("Falha de autenticação de Assinatura Digital do Processo Rementente %d", idProcessRecebido));
+                    break;
                 }
                 
                 if(process.getProcessosConhecidosAoSolicitarRecurso() == resourceOk.getReceivedMessages()){
@@ -246,11 +248,18 @@ public class Mensagem {
                 LOG.info(String.format("RESOURCE_DENIAL recebido de '%d'. (%d)//(%d)", idProcessRecebido, process.getProcessosConhecidosAoSolicitarRecurso(), resourceNegado.getReceivedMessages()));
                 
                 //AUTENTICAÇÃO DE REMENTENTE
-                Key publicKeyDenial = process.getPublicKeyFromAnotherProcess(idProcessRecebido);
-                String assinaturaDenial = RSA.descriptografar(publicKeyDenial, json.getString("assinatura"), DEFAULT_ENCODING);
+                PublicKey publicKeyDenial = process.getPublicKeyFromAnotherProcess(idProcessRecebido);
+                String assinaturaDenial = "";
+                if(publicKeyDenial != null){
+                    assinaturaDenial = RSA.descriptografar(publicKeyDenial, json.getString("assinatura"), DEFAULT_ENCODING);
+                }else{
+                    LOG.severe(String.format("O Remetente da mensagem '%d' não está mais Online. Não é possível autenticar. ", idProcessRecebido));
+                    break;
+                }
                 
                 if(!assinaturaDenial.equals(RESOURCE_DENIAL.name())){
                     LOG.severe(String.format("Falha de autenticação de Assinatura Digital do Processo Rementente %d", idProcessRecebido));
+                    break;
                 }
                 
                 /* Se tal recurso foi solicitado por mim (WANTED), foi negado, mas
@@ -302,7 +311,6 @@ public class Mensagem {
         
 //        System.out.println("========= " + json.toString());
         byte[] data = json.toString().getBytes(DEFAULT_ENCODING);
-        System.out.println("1: " + new String(data, DEFAULT_ENCODING));
         return new DatagramPacket(data, data.length, process.getGroup(), MULTICAST_PORT);
     }
 

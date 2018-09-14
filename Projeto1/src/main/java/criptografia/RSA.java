@@ -10,6 +10,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -35,7 +36,7 @@ public class RSA {
 
         try {
             kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(4096);
+            kpg.initialize(512, new SecureRandom());
         } catch(NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new RuntimeException("Falha ao Gerar par de Chaves Pública/Privada com algoritmo RSA.");
@@ -54,7 +55,7 @@ public class RSA {
      *
      * @return [{@link java.lang.String}] contendo a mensagem criptografada.
      */
-    public static String criptografar(Key key, String message, Charset encode){
+    public static String criptografar(PrivateKey key, String message, Charset encode){
         if(key == null || message == null){
             return null;
         }
@@ -83,7 +84,7 @@ public class RSA {
      *
      * @return [{@link java.lang.String}] contendo a mensagem descriptografada.
      */
-    public static String descriptografar(Key key, String data, Charset encode){
+    public static String descriptografar(PublicKey key, String data, Charset encode){
         if(key == null || data == null || encode == null){
             return null;
         }
@@ -118,7 +119,6 @@ public class RSA {
         try {
             KeyFactory factory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec spec = factory.getKeySpec(key, X509EncodedKeySpec.class);
-//            LOG.info(String.format("publicKeyToString: %s", Base64.getEncoder().encodeToString(spec.getEncoded())));
             return Base64.getEncoder().encodeToString(spec.getEncoded());
         } catch(NoSuchAlgorithmException | InvalidKeySpecException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -141,7 +141,6 @@ public class RSA {
     }
     
     public static PublicKey StringToPublicKey(String key){
-//        LOG.info(String.format("StringToPublicKey: %s", key));
         try {
             byte[] data = Base64.getDecoder().decode(key);
             X509EncodedKeySpec spec = new X509EncodedKeySpec(data);

@@ -62,8 +62,8 @@ public class Process extends Thread {
         return publicKey;
     }
 
-    public PublicKey getPrivateKey(){
-        return publicKey;
+    public PrivateKey getPrivateKey(){
+        return privateKey;
     }
 
     public InetAddress getGroup(){
@@ -83,6 +83,9 @@ public class Process extends Thread {
     }
 
     public PublicKey getPublicKeyFromAnotherProcess(Long idProcess){
+        if(this.getProcessosConhecidos().isEmpty() || this.getProcessosConhecidos().get(idProcess) == null){
+            return null;
+        }
         return RSA.StringToPublicKey(this.getProcessosConhecidos().get(idProcess).getString("key"));
     }   
     
