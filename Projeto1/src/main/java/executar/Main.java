@@ -97,6 +97,10 @@ public class Main {
             switch(option) {
                 case "0":
                     timer.cancel();
+                    Map<Long, Recurso> map = process.getRecursosDisponiveis();
+                    for (Map.Entry<Long, Recurso> entry : map.entrySet()){
+                        process.liberarRecurso(entry.getKey());
+                    }
                     process.encerrar();
                     break;
                 case "1":
