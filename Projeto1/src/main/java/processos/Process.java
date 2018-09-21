@@ -116,6 +116,10 @@ public class Process extends Thread {
      * </ul>
      */
     public void encerrar(){
+        Map<Long, Recurso> map = getRecursosDisponiveis();
+        for (Map.Entry<Long, Recurso> entry : map.entrySet()){
+            liberarRecurso(entry.getKey());
+        }
         Mensagem.announce(GROUP_OUT, this);
         leaveMulticastGroup();
         this.stop();
@@ -255,7 +259,7 @@ public class Process extends Thread {
         while(true){
             try {
                 //Define o timeout para receber as respostas do grupo
-                socket.setSoTimeout(Main.TIMEOUT);
+//                socket.setSoTimeout(Main.TIMEOUT);
                 socket.receive(messageIn);
                 Mensagem.tratarMensagemRecebida(messageIn, this);
             } catch(SocketTimeoutException ste) {
