@@ -2,43 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6494237c-7692-4422-a5ed-f4849bc6a4b0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/JavaRMI.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/build.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/manifest.mf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/build-impl.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/genfiles.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/private/private.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/private/private.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/project.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/executar/GraphicalObject.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/executar/JavaRMI.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/implementacoes/ServImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/interfaces/InterfaceCli.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/interfaces/InterfaceServ.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/naming/NamingService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/JavaRMIClient.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../Projeto_2/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../Projeto_2/Projeto_2.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../Projeto_2/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../Projeto_2/src/PassagemAerea/PassagemAerea.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../Projeto_2/src/executar/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/manifest.mf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbproject/build-impl.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbproject/genfiles.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbproject/private/private.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbproject/project.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbproject/project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/executar/GraphicalObject.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/executar/JavaRMIClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/executar/JavaRMIClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/implementacoes/CliImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/implementacoes/CliImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/InterfaceCli.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/InterfaceCli.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/InterfaceServ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/InterfaceServ.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -70,9 +39,11 @@
     <session id="-2020616957">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
+          <entry key="project.open.time.12" value="1" />
+          <entry key="project.open.time.21" value="1" />
           <entry key="project.open.time.6" value="1" />
-          <entry key="project.opened" value="1" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -93,7 +64,7 @@
         <entry file="file://$PROJECT_DIR$/src/executar/JavaRMIClient.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="272">
-              <caret line="27" column="23" lean-forward="true" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
+              <caret line="27" column="23" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -110,7 +81,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/interfaces/InterfaceCli.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="83">
+            <state relative-caret-position="160">
               <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
             </state>
           </provider>
@@ -147,9 +118,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="676" />
-    <option name="width" value="697" />
-    <option name="height" value="735" />
+    <option name="x" value="10" />
+    <option name="y" value="20" />
+    <option name="width" value="1346" />
+    <option name="height" value="688" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -157,7 +129,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -192,14 +164,14 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537900165293" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../JavaRMIServer" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Projeto_2" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
@@ -244,16 +216,19 @@
       <updated>1537899216653</updated>
       <workItem from="1537899219434" duration="63000" />
       <workItem from="1537899371266" duration="797000" />
+      <workItem from="1538495183269" duration="1254000" />
+      <workItem from="1538499638200" duration="228000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="860000" />
+    <option name="totallyTimeSpent" value="2942000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24583964" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26096824" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -320,23 +295,12 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/interfaces/InterfaceCli.java">
+    <entry file="file://$PROJECT_DIR$/src/executar/GraphicalObject.java" />
+    <entry file="file://$PROJECT_DIR$/src/executar/JavaRMIClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="83">
-          <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+        <state relative-caret-position="272">
+          <caret line="27" column="23" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/interfaces/InterfaceServ.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="17" column="1" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/executar/GraphicalObject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-192" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/implementacoes/CliImpl.java">
@@ -346,10 +310,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/executar/JavaRMIClient.java">
+    <entry file="file://$PROJECT_DIR$/src/interfaces/InterfaceCli.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="27" column="23" lean-forward="true" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
+        <state relative-caret-position="160">
+          <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/interfaces/InterfaceServ.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="17" column="1" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
         </state>
       </provider>
     </entry>
