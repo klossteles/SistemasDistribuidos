@@ -1,0 +1,29 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package executar;
+
+import interfaces.ServerInterface;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+/**
+ *
+ * @author Brendon
+ */
+public class Main {
+    
+    public static void main(String[] args) throws RemoteException, NotBoundException{
+        Registry servicoNomes = LocateRegistry.getRegistry();
+        ServerInterface server = (ServerInterface) servicoNomes.lookup("server");
+        Server serv = new Server(server);
+        
+        System.out.println("Oi");
+        serv.consultarPassagensPorDestino();
+        System.out.println("Tchau");
+    }
+}

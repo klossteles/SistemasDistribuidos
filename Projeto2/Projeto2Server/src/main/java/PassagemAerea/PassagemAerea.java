@@ -1,5 +1,6 @@
 package PassagemAerea;
 
+import java.time.Instant;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,14 +12,17 @@ import java.util.logging.Logger;
 
 public class PassagemAerea {
     ConcurrentHashMap<String, JSONArray> passagensAereas; //HashMap para salvar o destino, json com as outras informações
-    private static final Logger LOG = Logger.getLogger(Process.class.getName());
+    private static final Logger LOG = Logger.getLogger(PassagemAerea.class.getName());
 
     public PassagemAerea() {
-        ConcurrentHashMap<String, JSONArray> passagensAereas = new ConcurrentHashMap<>();
-        this.passagensAereas = passagensAereas;
+        this.passagensAereas = new ConcurrentHashMap<>();
     }
 
-    public void consultarPassagensPorDestino(){
+    public ConcurrentHashMap<String, JSONArray> getPassagensAereas(){
+        return passagensAereas;
+    }
+
+    public JSONArray consultarPassagensPorDestino(){
         Scanner scan = new Scanner(System.in);
         System.out.println("Qual destino? ");
 
@@ -29,14 +33,15 @@ public class PassagemAerea {
         String destino = scan.nextLine();
 
         if (destino.equalsIgnoreCase("sair")) {
-            return ;
+            return null;
         }
         if (!passagensAereas.containsKey(destino)) {
             LOG.log(Level.INFO, "Não existem passagens com esse destino cadastradas.");
-            return ;
+            return null;
         }
-
+        
         System.out.println(passagensAereas.get(destino).toString(4));
+        return passagensAereas.get(destino);
     }
 
     public boolean cadastrarNovaPassagem(String destino, String origem, int ida, int volta, String data_ida, String data_volta, int num_pessoas) {
@@ -50,6 +55,7 @@ public class PassagemAerea {
         }
 
         JSONObject jo = new JSONObject();
+        jo.put("ID", Instant.now().getNano());
         jo.put("DESTINO", destino);
         jo.put("ORIGEM", origem);
         jo.put("IDA", ida);
