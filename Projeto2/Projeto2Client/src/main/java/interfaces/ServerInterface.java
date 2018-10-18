@@ -16,9 +16,9 @@ import org.json.JSONArray;
  * @author Brendon & Lucas
  */
 public interface ServerInterface extends Remote{
-    JSONArray consultarPassagensPorDestino()   throws RemoteException;
-    JSONArray consultarHospedagensPorDestino() throws RemoteException;
-    JSONArray consultarPacotesPorDestino()     throws RemoteException;
+    String consultarPassagens()   throws RemoteException;
+    String consultarHospedagens() throws RemoteException;
+    String consultarPacotes()     throws RemoteException;
     
     boolean registrarInteressePassagem(String passagem)  throws RemoteException;
     boolean registrarInteresseHospedagem(String hospedagem) throws RemoteException;

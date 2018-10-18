@@ -8,10 +8,10 @@ package executar;
 import PassagemAerea.PassagemAerea;
 import hospedagem.Hospedagem;
 import interfaces.ServerInterface;
+import pacotes.Pacote;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import org.json.JSONArray;
-import pacotes.Pacote;
 
 /**
  *
@@ -42,18 +42,18 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
-    public JSONArray consultarPassagensPorDestino() throws RemoteException{
-        return passagens.consultarPassagensPorDestino();
+    public String consultarPassagens() throws RemoteException{
+        return passagens.consultarPassagens();
     }
 
     @Override
-    public JSONArray consultarHospedagensPorDestino() throws RemoteException{
-        return hospedagens.consultarHospedagemPorDestino();
+    public String consultarHospedagens() throws RemoteException{
+        return hospedagens.consultarHospedagem();
     }
 
     @Override
-    public JSONArray consultarPacotesPorDestino() throws RemoteException{
-        return pacotes.consultarPacotesPorDestino();
+    public String consultarPacotes() throws RemoteException{
+        return pacotes.consultarPacotes();
     }
 
     @Override

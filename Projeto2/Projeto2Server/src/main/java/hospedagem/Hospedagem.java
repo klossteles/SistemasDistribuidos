@@ -1,6 +1,8 @@
 package hospedagem;
 
 import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,73 +25,65 @@ public class Hospedagem {
     //Número Pessoas
     //Preço
 
-    ConcurrentHashMap<String, JSONArray> hospedagens;
+    ConcurrentHashMap<Long, JSONObject> hospedagens;
     private static final Logger LOG = Logger.getLogger(Hospedagem.class.getName());
 
     public Hospedagem(){
         this.hospedagens = new ConcurrentHashMap<>();
     }
 
-    public ConcurrentHashMap<String, JSONArray> getHospedagens(){
+    public ConcurrentHashMap<Long, JSONObject> getHospedagens(){
         return hospedagens;
     }
 
-    public JSONArray consultarHospedagemPorDestino(){
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Qual destino? ");
-
-        for(Map.Entry<String, JSONArray> entry : hospedagens.entrySet()){
-            System.out.print("    - " + entry.getKey() + "\n");
+    public String consultarHospedagem(){
+        StringBuilder passagens = new StringBuilder();
+        for (Map.Entry<Long, JSONObject> entry : this.getHospedagens().entrySet()) {
+            JSONObject jsonObject = entry.getValue();
+            passagens.append("\n");
+            passagens.append("Identificador: ").append(entry.getKey());
+            passagens.append("\nData de entrada: ").append(jsonObject.get("DATA_ENTRADA"));
+            passagens.append("\nData de saída: ").append(jsonObject.get("DATA_SAIDA"));
+            passagens.append("\nNum. pessoas: ").append(jsonObject.getInt("NUM_PESSOAS"));
+            passagens.append("\nNum. quartos: ").append(jsonObject.getInt("NUM_QUARTOS"));
+            passagens.append("\nPreço: ").append(jsonObject.getLong("PRECO"));
+            passagens.append("\n");
+            passagens.append("\n");
         }
-        System.out.println("Digite 'sair' para sair");
-        String destino = scan.nextLine();
-
-        if(destino.equalsIgnoreCase("sair")){
-            return null;
-        }
-        if(!hospedagens.containsKey(destino)){
-            LOG.log(Level.INFO, "Não existem hospedagens com esse destino cadastradas.");
-            return null;
-        }
-
-        System.out.println(hospedagens.get(destino).toString(4));
-        return hospedagens.get(destino);
+        return  passagens.toString();
     }
 
-    public boolean cadastrarNovaHospedagem(String destino, String dataEntrada, String dataSaida, int numeroQuartos, int numeroPessoas, double preco){
-        if(destino == null || destino.isEmpty()){
-            System.out.println("É necessário informar o NOME/CIDADE da Hospedagem.");
-            return false;
+    public void cadastrarNovaHospedagem(String nome, String entrada, String saida, int num_pessoas, double preco, int num_quartos) {
+        String[] aux_entrada = entrada.split("/");
+        String[] aux_saida = saida.split("/");
+        if (aux_entrada.length < 3) {
+            System.out.println("Data de entrada inválida.");
+            return ;
+        }
+        if (aux_saida.length < 3) {
+            System.out.println("Data de saída inválida.");
+            return ;
         }
 
-        if(dataSaida == null || dataEntrada == null || dataSaida.isEmpty() || dataEntrada.isEmpty()){
-            System.out.println("As datas de Entrada e Saída não estão no formato esperado.");
-            return false;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Integer.parseInt(aux_entrada[2]), Integer.parseInt(aux_entrada[1]), Integer.parseInt(aux_entrada[0]));
+        Date data_entrada = cal.getTime();
+        cal.set(Integer.parseInt(aux_saida[2]), Integer.parseInt(aux_saida[1]), Integer.parseInt(aux_saida[0]));
+        Date data_saida = cal.getTime();
+        if (data_entrada.after(data_saida)) {
+            System.out.println("Data de entrada não pode ser posterior a data de saída.");
+            return;
         }
 
-        if(numeroPessoas < 0 || preco < 0){
-            System.out.println("O número de Pessoas e o Preço da Hospedagem não podem ser negativos.");
-            return false;
-        }
-
-        JSONObject hospedagem = new JSONObject();
-        hospedagem.put("ID", Instant.now().getNano());
-        hospedagem.put("NOME", destino);
-        hospedagem.put("DATA_ENTRADA", dataEntrada);
-        hospedagem.put("DATA_SAIDA", dataSaida);
-        hospedagem.put("NUMERO_QUARTOS", numeroQuartos);
-        hospedagem.put("NUMERO_PESSOAS", numeroPessoas);
-        hospedagem.put("PRECO", preco);
-
-        JSONArray jsonArray;
-        if(this.hospedagens.containsKey(destino)){
-            jsonArray = this.hospedagens.get(destino);
-        } else{
-            jsonArray = new JSONArray();
-        }
-        jsonArray.put(hospedagem);
-        this.hospedagens.put(destino, jsonArray);
-        return true;
+        JSONObject jo = new JSONObject();
+        jo.put("NOME", nome);
+        jo.put("DATA_ENTRADA", data_entrada);
+        jo.put("DATA_SAIDA", data_saida);
+        jo.put("NUM_PESSOAS", num_pessoas);
+        jo.put("PRECO", preco);
+        jo.put("NUM_QUARTOS", num_quartos);
+        Long id = System.currentTimeMillis() + System.nanoTime();
+        this.hospedagens.put(id, jo);
     }
 
 }

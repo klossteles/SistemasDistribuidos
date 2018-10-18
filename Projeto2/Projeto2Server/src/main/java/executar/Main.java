@@ -2,12 +2,9 @@ package executar;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
 import naming.Naming;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class Main {
 
@@ -21,11 +18,11 @@ public class Main {
         //com o nome "server" no Serviço de Nomes.
         Naming naming = new Naming(server);
 
-        server.getPassagens().cadastrarNovaPassagem("São Paulo", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20);
-        server.getPassagens().cadastrarNovaPassagem("Rio de Janeiro", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20);
+        server.getPassagens().cadastrarNovaPassagem("São Paulo", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20, new Double(150.00));
+        server.getPassagens().cadastrarNovaPassagem("Rio de Janeiro", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20, new Double(500.00));
 
-        server.getHospedagens().cadastrarNovaHospedagem("São Paulo", "20/10/2018", "23/10/2018", 1, 2, 700.0);
-        server.getHospedagens().cadastrarNovaHospedagem("Rio de Janeiro", "03/12/2018", "10/12/2018", 2, 4, 731.9);
+        server.getHospedagens().cadastrarNovaHospedagem("São Paulo", "20/10/2018", "23/10/2018", 1, new Double(350.00), 700);
+        server.getHospedagens().cadastrarNovaHospedagem("Rio de Janeiro", "03/12/2018", "10/12/2018", 2, new Double(4), 731);
 
         new Thread(menu).start();
     }
@@ -60,19 +57,19 @@ public class Main {
                         cadastrarPassagem(scan);
                         break;
                     case "2":
-                        server.getPassagens().consultarPassagensPorDestino();
+                        System.out.println(server.getPassagens().consultarPassagens());
                         break;
                     case "3":
                         cadastrarHospedagem(scan);
                         break;
                     case "4":
-                        server.getHospedagens().consultarHospedagemPorDestino();
+                        System.out.println(server.getHospedagens().consultarHospedagem());
                         break;
                     case "5":
                         cadastrarPacote(scan);
                         break;
                     case "6":
-                        server.getPacotes().consultarPacotesPorDestino();
+                        System.out.println(server.getPacotes().consultarPacotes());
                         break;
                     default:
                         System.err.println("Opção Indisponível");
@@ -86,6 +83,7 @@ public class Main {
         String aux;
         String destino, origem, data_ida, data_volta;
         int ida, volta, num_pessoas;
+        Double preco;
         System.out.println("Insira o destino: ");
         destino = scan.nextLine();
         System.out.println("Insira a origem: ");
@@ -111,7 +109,10 @@ public class Main {
         System.out.println("Número de pessoas: ");
         aux = scan.nextLine();
         num_pessoas = Integer.parseInt(aux);
-        server.getPassagens().cadastrarNovaPassagem(destino, origem, ida, volta, data_ida, data_volta, num_pessoas);
+        System.out.println("Preço: ");
+        aux = scan.nextLine();
+        preco = Double.parseDouble(aux);
+        server.getPassagens().cadastrarNovaPassagem(destino, origem, ida, volta, data_ida, data_volta, num_pessoas, preco);
     }
 
     private static void cadastrarHospedagem(Scanner scan){
@@ -138,7 +139,7 @@ public class Main {
         System.out.println("Preço:");
         preco = Double.parseDouble(scan.nextLine());
 
-        server.getHospedagens().cadastrarNovaHospedagem(destino, dataEntrada, dataSaida, numeroQuartos, numeroPessoas, preco);
+        server.getHospedagens().cadastrarNovaHospedagem(destino,dataEntrada,dataSaida,numeroPessoas,preco,numeroQuartos);
     }
 
     /**
@@ -150,40 +151,39 @@ public class Main {
      */
     private static boolean cadastrarPacote(Scanner scan){
         System.out.println("Escolha a Passagem Aérea do Pacote:");
-        JSONObject passagens = getPassagem(scan);
+        System.out.println(server.getPassagens().consultarPassagens());
+        String aux = scan.nextLine();
+        Long id_passagem = Long.parseLong(aux);
 
         System.out.println("Escolha a Hospedagem para o Pacote:");
-        JSONObject hospedagens = getHospedagem(scan);
+        System.out.println(server.getHospedagens().consultarHospedagem());
+        aux = scan.nextLine();
+        Long id_hospedagem = Long.parseLong(aux);
 
-        if(passagens == null || hospedagens == null){
-            return false;
-        }
-
-        server.getPacotes().cadastrarNovoPacote(passagens, hospedagens);
+        server.getPacotes().cadastrarNovoPacote(id_hospedagem, id_passagem, server.getHospedagens().getHospedagens(), server.getPassagens().getPassagensAereas());
         return true;
     }
 
-    private static JSONObject getPassagem(Scanner scan){
-        System.out.println("===== Passagens =====");
-        for(Map.Entry<String, JSONArray> entry : server.getPassagens().getPassagensAereas().entrySet()){
-            System.out.print(String.format("    - %s %s", entry.getKey(), System.lineSeparator()));
-        }
+    private static Long getPassagem(Scanner scan){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("===== Passagens =====");
+        stringBuilder.append(server.getPassagens().consultarPassagens());
 
         System.out.println("Opção: ");
         String op = scan.nextLine();
 
-        return server.getPassagens().getPassagensAereas().get(op).getJSONObject(0);
+        return Long.parseLong(op);
     }
 
-    private static JSONObject getHospedagem(Scanner scan){
-        System.out.println("===== Hospedagens =====");
-        for(Map.Entry<String, JSONArray> entry : server.getHospedagens().getHospedagens().entrySet()){
-            System.out.print(String.format("    - %s %s", entry.getKey(), System.lineSeparator()));
-        }
+    private static String getHospedagem(Scanner scan) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("===== Hospedagens =====");
 
+        stringBuilder.append(server.getHospedagens().consultarHospedagem());
         System.out.println("Opção: ");
         String op = scan.nextLine();
+        Long identificador = Long.parseLong(op);
 
-        return server.getHospedagens().getHospedagens().get(op).getJSONObject(0);
+        return server.getHospedagens().getHospedagens().get(identificador).getString("NOME");
     }
 }

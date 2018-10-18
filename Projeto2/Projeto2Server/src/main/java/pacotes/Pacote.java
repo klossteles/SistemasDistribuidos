@@ -19,59 +19,54 @@ import org.json.JSONObject;
  */
 public class Pacote {
 
-    ConcurrentHashMap<String, JSONArray> pacotes;
-    private static final Logger LOG = Logger.getLogger(Pacote.class.getName());
+    ConcurrentHashMap<Long, JSONObject> pacotes;
+    private static final Logger LOG = Logger.getLogger(Process.class.getName());
 
-    public Pacote(){
+    public Pacote() {
         this.pacotes = new ConcurrentHashMap<>();
     }
 
-    public JSONArray consultarPacotesPorDestino(){
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Qual destino? ");
-
-        for(Map.Entry<String, JSONArray> entry : pacotes.entrySet()){
-            System.out.print("    - " + entry.getKey() + "\n");
-        }
-        System.out.println("Digite 'sair' para sair");
-        String destino = scan.nextLine();
-
-        if(destino.equalsIgnoreCase("sair")){
-            return null;
-        }
-        if(!pacotes.containsKey(destino)){
-            LOG.log(Level.INFO, "Não existem pacotes cadastradas para esse destino.");
-            return null;
-        }
-
-        JSONArray pacotesEncontrados = pacotes.get(destino);
-        System.out.println(pacotesEncontrados.toString(4));
-        return pacotesEncontrados;
+    public ConcurrentHashMap<Long, JSONObject> getPacotes() {
+        return pacotes;
     }
+
+    public String consultarPacotes(){
+        StringBuilder passagens = new StringBuilder();
+        for (Map.Entry<Long, JSONObject> entry : this.getPacotes().entrySet()) {
+            JSONObject jsonObject = entry.getValue();
+
+            passagens.append("\n");
+            passagens.append("Identificador do pacote: ").append(entry.getKey());
+            passagens.append("\nIdentificador da hospedagem: ").append(jsonObject.getLong("ID_HOSPEDAGEM"));
+            passagens.append("\nIdentificador da passagem: ").append(jsonObject.getLong("ID_PASSAGEM"));
+            passagens.append("\n");
+            passagens.append("\n");
+        }
+        return  passagens.toString();
+    }
+
 
     /**
      * Cria um novo pacote, utilizando o destino da passagem como KEY.
-     * 
-     * @param passagem
-     * @param hospedagem
-     * @return 
+     *
+     * @param id_hospedagem
+     * @param id_passagem
+     * @param hospedagens
+     * @param passagens
      */
-    public boolean cadastrarNovoPacote(JSONObject passagem, JSONObject hospedagem){
-        String passagemDestino = passagem.getString("DESTINO");
-        
-        JSONObject pacote = new JSONObject();
-        pacote.put("passagem", passagem);
-        pacote.put("hospedagem", hospedagem);
-        
-        if(this.pacotes.containsKey(passagemDestino)){
-            this.pacotes.get(passagemDestino).put(pacote);
-        }else{
-            JSONArray array = new JSONArray();
-            array.put(pacote);
-            
-            this.pacotes.put(passagemDestino, array);
+    public void cadastrarNovoPacote(Long id_hospedagem, Long id_passagem, ConcurrentHashMap<Long, JSONObject> hospedagens, ConcurrentHashMap<Long, JSONObject> passagens) {
+        if (!hospedagens.containsKey(id_hospedagem)) {
+            System.out.println("Identificador da hospedagem inválido.");
+            return;
         }
-        return true;
+        if (!passagens.containsKey(id_passagem)) {
+            System.out.println("Identificador da passagem inválido.");
+            return;
+        }
+        JSONObject jo = new JSONObject();
+        jo.put("ID_HOSPEDAGEM", id_hospedagem);
+        jo.put("ID_PASSAGEM", id_passagem);
+        Long id = System.currentTimeMillis() + System.nanoTime();
+        this.getPacotes().put(id, jo);
     }
-    
 }

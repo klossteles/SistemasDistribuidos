@@ -27,17 +27,17 @@ public class Server extends UnicastRemoteObject implements ServerInterface{
     */
 
     @Override
-    public JSONArray consultarPassagensPorDestino() throws RemoteException{
-        return server.consultarPassagensPorDestino();
+    public String consultarPassagens() throws RemoteException{
+        return server.consultarPassagens();
     }
 
     @Override
-    public JSONArray consultarHospedagensPorDestino() throws RemoteException{
+    public String consultarHospedagens() throws RemoteException{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public JSONArray consultarPacotesPorDestino() throws RemoteException{
+    public String consultarPacotes() throws RemoteException{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
