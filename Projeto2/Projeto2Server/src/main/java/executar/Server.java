@@ -26,14 +26,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public Server() throws RemoteException{
         this.passagens = new PassagemAerea();
         this.hospedagens = new Hospedagem();
-        this.pacotes = new Pacote();
+        this.pacotes = new Pacote(this.passagens, this.hospedagens);
     }
 
     public PassagemAerea getPassagens(){
         return passagens;
     }
 
-    public Hospedagem getHospedagens(){
+    public Hospedagem getHospedagens() {
         return hospedagens;
     }
 
@@ -57,7 +57,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
-    public boolean registrarInteressePassagem(String passagem) throws RemoteException{
+    public boolean registrarInteressePassagem(String destino) throws RemoteException{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -84,5 +84,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     @Override
     public boolean removerInteressePacote(String pacote) throws RemoteException{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean comprarPassagem(Long identificador) throws RemoteException {
+        return passagens.comprarPassagem(identificador);
+    }
+
+    @Override
+    public boolean comprarHospedagem(Long identificador) throws RemoteException {
+        return hospedagens.comprarHospedagem(identificador);
+    }
+
+    @Override
+    public boolean comprarPacote(Long id) throws RemoteException {
+        return pacotes.comprarPacote(id);
     }
 }

@@ -96,4 +96,32 @@ public class PassagemAerea {
         this.passagensAereas.put(id, jo);
         return;
     }
+
+    public boolean comprarPassagem (Long identificador) {
+        if (!this.getPassagensAereas().containsKey(identificador)) {
+            return false;
+        }
+        JSONObject passagem = this.getPassagensAereas().get(identificador);
+        int num_pessoas = passagem.getInt("NUM_PESSOAS");
+        num_pessoas -= 1;
+        if (num_pessoas <= 0) {
+            this.getPassagensAereas().remove(identificador);
+        } else {
+            passagem.put("NUM_PESSOAS",num_pessoas);
+            this.getPassagensAereas().put(identificador, passagem);
+        }
+        return true;
+    }
+
+    public boolean addPassagem (Long id) {
+        if (!this.getPassagensAereas().containsKey(id)) {
+            return false;
+        }
+        JSONObject passagem = this.getPassagensAereas().get(id);
+        int num_pessoas = passagem.getInt("NUM_PESSOAS");
+        num_pessoas += 1;
+        passagem.put("NUM_PESSOAS",num_pessoas);
+        this.getPassagensAereas().put(id, passagem);
+        return true;
+    }
 }

@@ -2,43 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="401db406-1045-4011-aecf-42e7c9e34ea9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/JavaRMI.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/build.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/manifest.mf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/build-impl.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/genfiles.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/private/private.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/private/private.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/project.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/nbproject/project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/executar/GraphicalObject.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/executar/JavaRMI.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/implementacoes/ServImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/interfaces/InterfaceCli.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/interfaces/InterfaceServ.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMI/src/naming/NamingService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/.idea/JavaRMIClient.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Projeto2/Projeto2Client/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../Projeto2/Projeto2Client/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/executar/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/executar/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/interfaces/ServerInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/interfaces/ServerInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../JavaRMIClient/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/build.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/manifest.mf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/nbproject/build-impl.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/nbproject/genfiles.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/nbproject/private/private.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/nbproject/project.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/nbproject/project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/src/executar/GraphicalObject.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/src/executar/JavaRMIClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/src/executar/JavaRMIClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/src/implementacoes/CliImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/src/implementacoes/CliImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/src/interfaces/InterfaceCli.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/src/interfaces/InterfaceCli.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaRMIClient/src/interfaces/InterfaceServ.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIClient/src/interfaces/InterfaceServ.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -82,9 +49,9 @@
     <session id="2086433142">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.opened" value="1" />
+          <entry key="project.closed" value="2" />
+          <entry key="project.open.time.0" value="2" />
+          <entry key="project.opened" value="2" />
         </counts>
       </usages-collector>
     </session>
@@ -155,8 +122,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -191,6 +156,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -266,17 +233,18 @@
       <updated>1537899007696</updated>
       <workItem from="1537899010962" duration="172000" />
       <workItem from="1537899385407" duration="782000" />
+      <workItem from="1539827800476" duration="408000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="954000" />
+    <option name="totallyTimeSpent" value="1362000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19364598" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19667171" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -320,6 +288,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/executar/JavaRMI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="27" column="52" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/implementacoes/ServImpl.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/interfaces/InterfaceCli.java">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -330,16 +308,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="256">
           <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/implementacoes/ServImpl.java">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/executar/JavaRMI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="27" column="52" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="52" />
         </state>
       </provider>
     </entry>

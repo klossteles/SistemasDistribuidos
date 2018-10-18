@@ -33,12 +33,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface{
 
     @Override
     public String consultarHospedagens() throws RemoteException{
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return server.consultarHospedagens();
     }
 
     @Override
     public String consultarPacotes() throws RemoteException{
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return server.consultarPacotes();
     }
 
     @Override
@@ -69,5 +69,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface{
     @Override
     public boolean removerInteressePacote(String pacote) throws RemoteException{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean comprarPassagem(Long identificador) throws RemoteException {
+        return server.comprarPassagem(identificador);
+    }
+
+    @Override
+    public boolean comprarHospedagem(Long identificador) throws RemoteException {
+        return server.comprarHospedagem(identificador);
+    }
+
+    @Override
+    public boolean comprarPacote(Long id) throws RemoteException {
+        return server.comprarPacote(id);
     }
 }

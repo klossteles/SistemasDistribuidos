@@ -46,7 +46,7 @@ public class Main {
                 System.out.println("3 - Cadastrar nova Hospedagem");
                 System.out.println("4 - Consultar Hospedagens cadastradas");
                 System.out.println("5 - Cadastrar novo Pacote");
-                System.out.println("6 - Consultar Pacotes cadastradas");
+                System.out.println("6 - Consultar Pacotes cadastrados");
 
                 option = scan.nextLine();
                 switch(option) {

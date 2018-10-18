@@ -34,8 +34,11 @@ public class Main {
             while(!option.equalsIgnoreCase("0")){
                 System.out.println("0 - Sair");
                 System.out.println("1 - Consultar passagens cadastradas");
-                System.out.println("2 - Consultar Hospedagens cadastradas");
-                System.out.println("3 - Consultar Pacotes cadastradas");
+                System.out.println("2 - Comprar passagem");
+                System.out.println("3 - Consultar Hospedagens cadastradas");
+                System.out.println("4 - Comprar hospedagem");
+                System.out.println("5 - Consultar Pacotes cadastradas");
+                System.out.println("6 - Comprar pacotes");
 
                 option = scan.nextLine();
                 switch(option) {
@@ -50,16 +53,66 @@ public class Main {
                         }
                         break;
                     case "2":
+                        try {System.out.println("=====PASSAGENS=====");
+                            System.out.println(serv.consultarPassagens());
+                            System.out.println("Informar o identificador da passagem");
+                            String aux = scan.nextLine();
+                            Long id = Long.parseLong(aux);
+                            boolean result = serv.comprarPassagem(id);
+                            if (result) {
+                                System.out.println("Passagem comprada.");
+                            } else {
+                                System.out.println("Ocorreu um erro ao comprar a passagem");
+                            }
+                        } catch (RemoteException e){
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "3":
                         try {
                             System.out.println(serv.consultarHospedagens());
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
                         break;
-                    case "3":
+                    case "4":
+                        try {
+                            System.out.println("=====HOSPEDAGENS=====");
+                            System.out.println(serv.consultarHospedagens());
+                            System.out.println("Informar o identificador da hospedagem");
+                            String aux = scan.nextLine();
+                            Long id = Long.parseLong(aux);
+                            boolean result = serv.comprarHospedagem(id);
+                            if (result) {
+                                System.out.println("Hospedagem comprada.");
+                            } else {
+                                System.out.println("Ocorreu um erro ao comprar a hospedagem");
+                            }
+                        } catch (RemoteException e){
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "5":
                         try {
                             System.out.println(serv.consultarPacotes());
                         } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "6":
+                        try {
+                            System.out.println("=====PACOTES=====");
+                            System.out.println(serv.consultarPacotes());
+                            System.out.println("Informar o identificador do pacote");
+                            String aux = scan.nextLine();
+                            Long id = Long.parseLong(aux);
+                            boolean result = serv.comprarPacote(id);
+                            if (result) {
+                                System.out.println("Pacote comprado.");
+                            } else {
+                                System.out.println("Ocorreu um erro ao comprar o pacote");
+                            }
+                        } catch (RemoteException e){
                             e.printStackTrace();
                         }
                         break;

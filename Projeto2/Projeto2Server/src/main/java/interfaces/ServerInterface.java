@@ -20,11 +20,15 @@ public interface ServerInterface extends Remote {
     String consultarHospedagens()   throws RemoteException;
     String consultarPacotes()       throws RemoteException;
     
-    boolean registrarInteressePassagem(String passagem)  throws RemoteException;
+    boolean registrarInteressePassagem(String destino)  throws RemoteException;
     boolean registrarInteresseHospedagem(String hospedagem) throws RemoteException;
     boolean registrarInteressePacote(String pacote)             throws RemoteException;
     
     boolean removerInteressePassagem(String passagem)  throws RemoteException;
     boolean removerInteresseHospedagem(String hospedagem) throws RemoteException;
     boolean removerInteressePacote(String pacote)             throws RemoteException;
+
+    boolean comprarPassagem(Long identificador) throws RemoteException;
+    boolean comprarHospedagem(Long identificador) throws RemoteException;
+    boolean comprarPacote(Long id) throws RemoteException;
 }

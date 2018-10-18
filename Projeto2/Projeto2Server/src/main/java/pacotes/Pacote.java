@@ -10,6 +10,9 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import PassagemAerea.PassagemAerea;
+import hospedagem.Hospedagem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,14 +23,26 @@ import org.json.JSONObject;
 public class Pacote {
 
     ConcurrentHashMap<Long, JSONObject> pacotes;
+    PassagemAerea passagens;
+    Hospedagem hospedagens;
     private static final Logger LOG = Logger.getLogger(Process.class.getName());
 
-    public Pacote() {
+    public Pacote(PassagemAerea passagens, Hospedagem hospedagens) {
         this.pacotes = new ConcurrentHashMap<>();
+        this.passagens = passagens;
+        this.hospedagens = hospedagens;
     }
 
     public ConcurrentHashMap<Long, JSONObject> getPacotes() {
         return pacotes;
+    }
+
+    public PassagemAerea getPassagens() {
+        return passagens;
+    }
+
+    public Hospedagem getHospedagens() {
+        return hospedagens;
     }
 
     public String consultarPacotes(){
@@ -68,5 +83,25 @@ public class Pacote {
         jo.put("ID_PASSAGEM", id_passagem);
         Long id = System.currentTimeMillis() + System.nanoTime();
         this.getPacotes().put(id, jo);
+    }
+
+    public boolean comprarPacote(Long id) {
+        JSONObject pacote = this.getPacotes().get(id);
+        Long id_passagem = pacote.getLong("ID_PASSAGEM");
+        Long id_hospedagem = pacote.getLong("ID_HOSPEDAGEM");
+
+        PassagemAerea passagens = this.getPassagens();
+        Hospedagem hospedagem = this.getHospedagens();
+        boolean comprou_passagem = passagens.comprarPassagem(id_passagem);
+        boolean comprou_hospedagem = hospedagem.comprarHospedagem(id_hospedagem);
+        if (comprou_passagem && !comprou_hospedagem) {
+            passagens.addPassagem(id_passagem);
+            return false;
+        }
+        if (!comprou_passagem && comprou_hospedagem) {
+            hospedagem.addHospedagem(id_hospedagem);
+            return false;
+        }
+        return true;
     }
 }

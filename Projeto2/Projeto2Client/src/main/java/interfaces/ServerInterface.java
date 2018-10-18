@@ -27,4 +27,8 @@ public interface ServerInterface extends Remote{
     boolean removerInteressePassagem(String passagem)  throws RemoteException;
     boolean removerInteresseHospedagem(String hospedagem) throws RemoteException;
     boolean removerInteressePacote(String pacote) throws RemoteException;
+
+    boolean comprarPassagem(Long identificador) throws RemoteException;
+    boolean comprarHospedagem(Long identificador) throws RemoteException;
+    boolean comprarPacote(Long id) throws RemoteException;
 }

@@ -86,4 +86,31 @@ public class Hospedagem {
         this.hospedagens.put(id, jo);
     }
 
+    public boolean comprarHospedagem (Long identificador) {
+        if (!this.getHospedagens().containsKey(identificador)) {
+            return false;
+        }
+        JSONObject hospedagem = this.getHospedagens().get(identificador);
+        int num_quartos = hospedagem.getInt("NUM_QUARTOS");
+        num_quartos -= 1;
+        if (num_quartos <= 0) {
+            this.getHospedagens().remove(identificador);
+        } else {
+            hospedagem.put("NUM_QUARTOS", num_quartos);
+            this.getHospedagens().put(identificador, hospedagem);
+        }
+        return true;
+    }
+
+    public boolean addHospedagem (Long id) {
+        if (!this.getHospedagens().containsKey(id)) {
+            return false;
+        }
+        JSONObject hospedagem = this.getHospedagens().get(id);
+        int num_quartos = hospedagem.getInt("NUM_QUARTOS");
+        num_quartos += 1;
+        hospedagem.put("NUM_QUARTOS", num_quartos);
+        this.getHospedagens().put(id, hospedagem);
+        return true;
+    }
 }

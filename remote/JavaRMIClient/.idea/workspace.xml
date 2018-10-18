@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6494237c-7692-4422-a5ed-f4849bc6a4b0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../Projeto_2/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../Projeto_2/Projeto_2.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../Projeto_2/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../Projeto_2/src/PassagemAerea/PassagemAerea.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../Projeto_2/src/executar/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Projeto2/Projeto2Client/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../Projeto2/Projeto2Client/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/executar/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/executar/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/interfaces/ServerInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Projeto2/Projeto2Server/src/main/java/interfaces/ServerInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../JavaRMIServer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaRMIServer/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -39,11 +37,12 @@
     <session id="-2020616957">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.21" value="1" />
           <entry key="project.open.time.6" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -118,10 +117,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="10" />
-    <option name="y" value="20" />
-    <option name="width" value="1346" />
-    <option name="height" value="688" />
+    <option name="x" value="676" />
+    <option name="width" value="697" />
+    <option name="height" value="735" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -130,6 +128,7 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -164,7 +163,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -218,17 +216,18 @@
       <workItem from="1537899371266" duration="797000" />
       <workItem from="1538495183269" duration="1254000" />
       <workItem from="1538499638200" duration="228000" />
+      <workItem from="1539827792706" duration="409000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2942000" />
+    <option name="totallyTimeSpent" value="3351000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26096824" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2647504" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
