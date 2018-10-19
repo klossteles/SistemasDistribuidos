@@ -1,14 +1,10 @@
 package hospedagem;
 
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -53,16 +49,16 @@ public class Hospedagem {
         return  passagens.toString();
     }
 
-    public void cadastrarNovaHospedagem(String nome, String entrada, String saida, int num_pessoas, double preco, int num_quartos) {
+    public JSONObject cadastrarNovaHospedagem(String destino, String entrada, String saida, int num_pessoas, double preco, int num_quartos) {
         String[] aux_entrada = entrada.split("/");
         String[] aux_saida = saida.split("/");
         if (aux_entrada.length < 3) {
             System.out.println("Data de entrada inválida.");
-            return ;
+            return null;
         }
         if (aux_saida.length < 3) {
             System.out.println("Data de saída inválida.");
-            return ;
+            return null;
         }
 
         Calendar cal = Calendar.getInstance();
@@ -72,11 +68,11 @@ public class Hospedagem {
         Date data_saida = cal.getTime();
         if (data_entrada.after(data_saida)) {
             System.out.println("Data de entrada não pode ser posterior a data de saída.");
-            return;
+            return null;
         }
 
         JSONObject jo = new JSONObject();
-        jo.put("NOME", nome);
+        jo.put("DESTINO", destino);
         jo.put("DATA_ENTRADA", data_entrada);
         jo.put("DATA_SAIDA", data_saida);
         jo.put("NUM_PESSOAS", num_pessoas);
@@ -84,6 +80,7 @@ public class Hospedagem {
         jo.put("NUM_QUARTOS", num_quartos);
         Long id = System.currentTimeMillis() + System.nanoTime();
         this.hospedagens.put(id, jo);
+        return jo;
     }
 
     public boolean comprarHospedagem (Long identificador) {

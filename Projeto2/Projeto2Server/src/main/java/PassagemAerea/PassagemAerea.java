@@ -1,15 +1,11 @@
 package PassagemAerea;
 
-import java.time.Instant;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PassagemAerea {
@@ -52,35 +48,44 @@ public class PassagemAerea {
         return  passagens.toString();
     }
 
-    public void cadastrarNovaPassagem(String destino, String origem, int ida, int volta, String str_ida, String str_volta, int num_pessoas, double preco) {
+    public JSONObject cadastrarNovaPassagem(String destino, String origem, int ida, int volta, String str_ida, String str_volta, int num_pessoas, double preco) {
         if (ida == 1 && (str_ida == null || str_ida.equalsIgnoreCase(""))){
             System.out.println("É necessário informar a data da passagem de ida.");
-            return;
+            return null;
         }
-        if (volta == 1 && (str_volta == null || str_volta.equalsIgnoreCase(""))){
+        if (volta == 1 && (str_volta == null || str_volta.isEmpty())){
             System.out.println("É necessário informar a data da passagem de volta.");
-            return;
+            return null;
         }
 
         String[] aux_ida = str_ida.split("/");
         String[] aux_volta = str_volta.split("/");
-        if (aux_ida.length < 3) {
+        if (ida == 1 && aux_ida.length < 3) {
             System.out.println("Data de ida inválida.");
-            return ;
+            return null;
         }
-        if (aux_volta.length < 3) {
+        if (volta == 1 && aux_volta.length < 3) {
             System.out.println("Data de volta inválida.");
-            return ;
+            return null;
         }
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Integer.parseInt(aux_ida[2]), Integer.parseInt(aux_ida[1]), Integer.parseInt(aux_ida[0]));
-        Date data_ida = cal.getTime();
-        cal.set(Integer.parseInt(aux_volta[2]), Integer.parseInt(aux_volta[1]), Integer.parseInt(aux_volta[0]));
-        Date data_volta = cal.getTime();
-        if (data_ida.after(data_volta)) {
+        
+        Date data_ida = null;
+        if(ida == 1){
+            cal.set(Integer.parseInt(aux_ida[2]), Integer.parseInt(aux_ida[1]), Integer.parseInt(aux_ida[0]));
+            data_ida = cal.getTime();
+        }
+        
+        Date data_volta = null;
+        if(volta == 1){
+            cal.set(Integer.parseInt(aux_volta[2]), Integer.parseInt(aux_volta[1]), Integer.parseInt(aux_volta[0]));
+            data_volta = cal.getTime();
+        }
+        
+        if (data_ida != null && data_volta != null && data_ida.after(data_volta)) {
             System.out.println("Data de entrada não pode ser posterior a data de saída.");
-            return;
+            return null;
         }
 
         JSONObject jo = new JSONObject();
@@ -94,7 +99,7 @@ public class PassagemAerea {
         jo.put("PRECO", preco);
         Long id = System.currentTimeMillis() + System.nanoTime();
         this.passagensAereas.put(id, jo);
-        return;
+        return jo;
     }
 
     public boolean comprarPassagem (Long identificador) {

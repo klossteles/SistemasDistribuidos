@@ -7,26 +7,22 @@ package interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import org.json.JSONArray;
 
 /**
- * Interface que define que tipos de informações podem ser consultadas ou 
+ * Interface que define que tipos de informações podem ser consultadas ou
  * solicitadas por um cliente.
- * 
+ *
  * @author Brendon & Lucas
  */
 public interface ServerInterface extends Remote {
-    String consultarPassagens()     throws RemoteException;
-    String consultarHospedagens()   throws RemoteException;
-    String consultarPacotes()       throws RemoteException;
-    
-    boolean registrarInteressePassagem(String destino)  throws RemoteException;
-    boolean registrarInteresseHospedagem(String hospedagem) throws RemoteException;
-    boolean registrarInteressePacote(String pacote)             throws RemoteException;
-    
-    boolean removerInteressePassagem(String passagem)  throws RemoteException;
-    boolean removerInteresseHospedagem(String hospedagem) throws RemoteException;
-    boolean removerInteressePacote(String pacote)             throws RemoteException;
+
+    String consultarPassagens() throws RemoteException;
+    String consultarHospedagens() throws RemoteException;
+    String consultarPacotes() throws RemoteException;
+    String consultarRegistrosInteresse(ClientInterface clientRef) throws RemoteException;
+
+    boolean registrarInteresse(String dadosInteresse, ClientInterface clientRef) throws RemoteException;
+    boolean removerInteresse(Long idRegistroInteresse, ClientInterface clientRef) throws RemoteException;
 
     boolean comprarPassagem(Long identificador) throws RemoteException;
     boolean comprarHospedagem(Long identificador) throws RemoteException;

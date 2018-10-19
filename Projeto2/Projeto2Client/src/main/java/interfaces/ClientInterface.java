@@ -13,5 +13,5 @@ import java.rmi.RemoteException;
  * @author Brendon
  */
 public interface ClientInterface extends Remote{
-    void notificarEvento() throws RemoteException;
+    void notificarEvento(String mensagem) throws RemoteException;
 }

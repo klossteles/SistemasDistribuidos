@@ -5,9 +5,13 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 import naming.Naming;
+import org.json.JSONObject;
 
 public class Main {
 
+    private static final String TIPO_INTERESSE_PASSAGEM = "PASSAGEM";
+    private static final String TIPO_INTERESSE_HOSPEDAGEM = "HOSPEDAGEM";
+    private static final String TIPO_INTERESSE_PACOTE = "PACOTE";
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
     private static Server server;
 
@@ -18,10 +22,10 @@ public class Main {
         //com o nome "server" no Serviço de Nomes.
         Naming naming = new Naming(server);
 
-        server.getPassagens().cadastrarNovaPassagem("São Paulo", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20, new Double(150.00));
-        server.getPassagens().cadastrarNovaPassagem("Rio de Janeiro", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20, new Double(500.00));
+        server.getPassagens().cadastrarNovaPassagem("São Paulo", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20, 150.00);
+        server.getPassagens().cadastrarNovaPassagem("Rio de Janeiro", "Curitiba", 1, 1, "28/09/2018", "29/09/2018", 20, 500.00);
 
-        server.getHospedagens().cadastrarNovaHospedagem("São Paulo", "20/10/2018", "23/10/2018", 1, new Double(350.00), 700);
+        server.getHospedagens().cadastrarNovaHospedagem("São Paulo", "20/10/2018", "23/10/2018", 1, 350.00, 700);
         server.getHospedagens().cadastrarNovaHospedagem("Rio de Janeiro", "03/12/2018", "10/12/2018", 2, new Double(4), 731);
 
         new Thread(menu).start();
@@ -37,6 +41,7 @@ public class Main {
     public static Runnable menu = new Runnable() {
         @Override
         public void run(){
+            JSONObject registroCadastrado;
             Scanner scan = new Scanner(System.in);
             String option = "";
             while(!option.equalsIgnoreCase("0")){
@@ -54,19 +59,28 @@ public class Main {
                         System.exit(0);
                         break;
                     case "1":
-                        cadastrarPassagem(scan);
+                        registroCadastrado = cadastrarPassagem(scan);
+                        if(registroCadastrado != null){
+                            server.notificarClientesInteresse(TIPO_INTERESSE_PASSAGEM, registroCadastrado);
+                        }
                         break;
                     case "2":
                         System.out.println(server.getPassagens().consultarPassagens());
                         break;
                     case "3":
-                        cadastrarHospedagem(scan);
+                        registroCadastrado = cadastrarHospedagem(scan);
+                        if(registroCadastrado != null){
+                            server.notificarClientesInteresse(TIPO_INTERESSE_HOSPEDAGEM, registroCadastrado);
+                        }
                         break;
                     case "4":
                         System.out.println(server.getHospedagens().consultarHospedagem());
                         break;
                     case "5":
-                        cadastrarPacote(scan);
+                        registroCadastrado = cadastrarPacote(scan);
+                        if(registroCadastrado != null){
+                            server.notificarClientesInteresse(TIPO_INTERESSE_PACOTE, registroCadastrado);
+                        }
                         break;
                     case "6":
                         System.out.println(server.getPacotes().consultarPacotes());
@@ -79,7 +93,7 @@ public class Main {
         }
     };
 
-    private static void cadastrarPassagem(Scanner scan){
+    private static JSONObject cadastrarPassagem(Scanner scan){
         String aux;
         String destino, origem, data_ida, data_volta;
         int ida, volta, num_pessoas;
@@ -112,10 +126,10 @@ public class Main {
         System.out.println("Preço: ");
         aux = scan.nextLine();
         preco = Double.parseDouble(aux);
-        server.getPassagens().cadastrarNovaPassagem(destino, origem, ida, volta, data_ida, data_volta, num_pessoas, preco);
+        return server.getPassagens().cadastrarNovaPassagem(destino, origem, ida, volta, data_ida, data_volta, num_pessoas, preco);
     }
 
-    private static void cadastrarHospedagem(Scanner scan){
+    private static JSONObject cadastrarHospedagem(Scanner scan){
         //Atributos da Hospedagem
         String destino, dataEntrada, dataSaida;
         int numeroQuartos, numeroPessoas;
@@ -139,7 +153,7 @@ public class Main {
         System.out.println("Preço:");
         preco = Double.parseDouble(scan.nextLine());
 
-        server.getHospedagens().cadastrarNovaHospedagem(destino,dataEntrada,dataSaida,numeroPessoas,preco,numeroQuartos);
+        return server.getHospedagens().cadastrarNovaHospedagem(destino, dataEntrada, dataSaida, numeroPessoas, preco, numeroQuartos);
     }
 
     /**
@@ -149,41 +163,19 @@ public class Main {
      * @param scan
      * @return
      */
-    private static boolean cadastrarPacote(Scanner scan){
-        System.out.println("Escolha a Passagem Aérea do Pacote:");
+    private static JSONObject cadastrarPacote(Scanner scan){
+        System.out.println("==== PASSAGENS ====");
         System.out.println(server.getPassagens().consultarPassagens());
+        System.out.println("Escolha a Passagem Aérea do Pacote:");
         String aux = scan.nextLine();
         Long id_passagem = Long.parseLong(aux);
 
-        System.out.println("Escolha a Hospedagem para o Pacote:");
+        System.out.println("==== HOSPEDAGENS ====");
         System.out.println(server.getHospedagens().consultarHospedagem());
+        System.out.println("Escolha a Hospedagem para o Pacote:");
         aux = scan.nextLine();
         Long id_hospedagem = Long.parseLong(aux);
 
-        server.getPacotes().cadastrarNovoPacote(id_hospedagem, id_passagem, server.getHospedagens().getHospedagens(), server.getPassagens().getPassagensAereas());
-        return true;
-    }
-
-    private static Long getPassagem(Scanner scan){
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("===== Passagens =====");
-        stringBuilder.append(server.getPassagens().consultarPassagens());
-
-        System.out.println("Opção: ");
-        String op = scan.nextLine();
-
-        return Long.parseLong(op);
-    }
-
-    private static String getHospedagem(Scanner scan) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("===== Hospedagens =====");
-
-        stringBuilder.append(server.getHospedagens().consultarHospedagem());
-        System.out.println("Opção: ");
-        String op = scan.nextLine();
-        Long identificador = Long.parseLong(op);
-
-        return server.getHospedagens().getHospedagens().get(identificador).getString("NOME");
+        return server.getPacotes().cadastrarNovoPacote(id_hospedagem, id_passagem, server.getHospedagens().getHospedagens(), server.getPassagens().getPassagensAereas());
     }
 }

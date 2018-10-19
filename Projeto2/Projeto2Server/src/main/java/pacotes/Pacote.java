@@ -6,14 +6,11 @@
 package pacotes;
 
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import PassagemAerea.PassagemAerea;
 import hospedagem.Hospedagem;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -68,21 +65,31 @@ public class Pacote {
      * @param id_passagem
      * @param hospedagens
      * @param passagens
+     * @return 
      */
-    public void cadastrarNovoPacote(Long id_hospedagem, Long id_passagem, ConcurrentHashMap<Long, JSONObject> hospedagens, ConcurrentHashMap<Long, JSONObject> passagens) {
+    public JSONObject cadastrarNovoPacote(Long id_hospedagem, Long id_passagem, ConcurrentHashMap<Long, JSONObject> hospedagens, ConcurrentHashMap<Long, JSONObject> passagens) {
         if (!hospedagens.containsKey(id_hospedagem)) {
             System.out.println("Identificador da hospedagem inválido.");
-            return;
+            return null;
         }
         if (!passagens.containsKey(id_passagem)) {
             System.out.println("Identificador da passagem inválido.");
-            return;
+            return null;
         }
+        
+        String destino = passagens.get(id_passagem).getString("DESTINO");
+        double precoTotal = passagens.get(id_passagem).getDouble("PRECO") +
+                            hospedagens.get(id_hospedagem).getDouble("PRECO");
+        
         JSONObject jo = new JSONObject();
         jo.put("ID_HOSPEDAGEM", id_hospedagem);
         jo.put("ID_PASSAGEM", id_passagem);
+        jo.put("DESTINO", destino);
+        jo.put("PRECO", precoTotal);
+                
         Long id = System.currentTimeMillis() + System.nanoTime();
         this.getPacotes().put(id, jo);
+        return jo;
     }
 
     public boolean comprarPacote(Long id) {
@@ -90,12 +97,12 @@ public class Pacote {
         Long id_passagem = pacote.getLong("ID_PASSAGEM");
         Long id_hospedagem = pacote.getLong("ID_HOSPEDAGEM");
 
-        PassagemAerea passagens = this.getPassagens();
+        PassagemAerea passagem = this.getPassagens();
         Hospedagem hospedagem = this.getHospedagens();
-        boolean comprou_passagem = passagens.comprarPassagem(id_passagem);
+        boolean comprou_passagem = passagem.comprarPassagem(id_passagem);
         boolean comprou_hospedagem = hospedagem.comprarHospedagem(id_hospedagem);
         if (comprou_passagem && !comprou_hospedagem) {
-            passagens.addPassagem(id_passagem);
+            passagem.addPassagem(id_passagem);
             return false;
         }
         if (!comprou_passagem && comprou_hospedagem) {
