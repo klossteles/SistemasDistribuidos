@@ -1,3 +1,9 @@
-*/target/
-*/.settings/
-*/.classpath
+Projeto1/*/target/
+Projeto1/*/.settings/
+Projeto1/*/.classpath
+Projeto2/*/target/
+Projeto2/*/.settings/
+Projeto2/*/.classpath
+Projeto3/*/target/
+Projeto3/.settings/
+Projeto3/*/.classpath
