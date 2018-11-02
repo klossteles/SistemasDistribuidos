@@ -1,16 +1,14 @@
 package PassagemAerea;
 
-import org.json.JSONObject;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+
+import org.json.JSONObject;
 
 public class PassagemAerea {
     ConcurrentHashMap<Long, JSONObject> passagensAereas = new ConcurrentHashMap<>();
-    private static final Logger LOG = Logger.getLogger(PassagemAerea.class.getName());
 
     public PassagemAerea() {
         this.passagensAereas = new ConcurrentHashMap<>();

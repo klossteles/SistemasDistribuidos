@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 /**
@@ -22,7 +22,6 @@ public class Hospedagem {
     //Preço
 
     ConcurrentHashMap<Long, JSONObject> hospedagens;
-    private static final Logger LOG = Logger.getLogger(Hospedagem.class.getName());
 
     public Hospedagem(){
         this.hospedagens = new ConcurrentHashMap<>();
