@@ -30,6 +30,7 @@
 </template>
 
 <script>
+  import Toastr from 'toastr'
   export default {
     name: 'passagens',
     data () {
@@ -71,7 +72,7 @@
             sortable: true,
             value: 'preco'
           }, {
-            text: 'Actions',
+            text: '',
             value: 'name',
             sortable: false
           }
@@ -82,8 +83,8 @@
             origem: 'Curitiba',
             ida: 1,
             volta: 1,
-            data_ida: '03/11/2018',
-            data_volta: '04/11/2018',
+            data_ida: '11/03/2018 14:15:16',
+            data_volta: '11/04/2018',
             num_pessoas: 120,
             preco: 150.00
           }, {
@@ -104,7 +105,7 @@
         if (data === '') {
           return ''
         }
-        return new Date(data).toUTCString()
+        return new Date(data).toLocaleString('pt-BR', {timeZone: 'UTC'})
       },
       formataIdaVolta: function (passagem) {
         if (passagem.ida === 1 && passagem.volta === 1) {
@@ -119,6 +120,7 @@
       },
       comprarPassagem: function (passagem) {
         this.passagens.push(passagem)
+        Toastr.success('Passagem comprada')
       }
     }
   }

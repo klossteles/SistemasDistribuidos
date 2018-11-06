@@ -14,7 +14,6 @@ import VueCharts from 'vue-chartjs'
 import Tooltip from 'vue-directive-tooltip'
 import Vuetify from 'vuetify'
 import VeeValidate from 'vee-validate'
-// import Toastr from 'toastr'
 
 // Resource logic
 Vue.use(Resource)
@@ -33,7 +32,6 @@ Vue.use(VueCharts)
 Vue.use(Tooltip)
 Vue.use(Vuetify)
 Vue.use(VeeValidate)
-// Vue.use(Toastr)
 
 // Import top level component
 import App from './App.vue'
