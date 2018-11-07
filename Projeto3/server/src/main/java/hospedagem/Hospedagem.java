@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -31,21 +32,16 @@ public class Hospedagem {
         return hospedagens;
     }
 
-    public String consultarHospedagem(){
-        StringBuilder passagens = new StringBuilder();
+    public JSONArray consultarHospedagem(){
+    	JSONArray listaHospedagens = new JSONArray();
+        
         for (Map.Entry<Long, JSONObject> entry : this.getHospedagens().entrySet()) {
             JSONObject jsonObject = entry.getValue();
-            passagens.append("\n");
-            passagens.append("Identificador: ").append(entry.getKey());
-            passagens.append("\nData de entrada: ").append(jsonObject.get("DATA_ENTRADA"));
-            passagens.append("\nData de saída: ").append(jsonObject.get("DATA_SAIDA"));
-            passagens.append("\nNum. pessoas: ").append(jsonObject.getInt("NUM_PESSOAS"));
-            passagens.append("\nNum. quartos: ").append(jsonObject.getInt("NUM_QUARTOS"));
-            passagens.append("\nPreço: ").append(jsonObject.getLong("PRECO"));
-            passagens.append("\n");
-            passagens.append("\n");
+            jsonObject.put("id", entry.getKey());
+            listaHospedagens.put(jsonObject);
         }
-        return  passagens.toString();
+        
+        return listaHospedagens;
     }
 
     public JSONObject cadastrarNovaHospedagem(String destino, String entrada, String saida, int num_pessoas, double preco, int num_quartos) {

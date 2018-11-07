@@ -1,0 +1,13 @@
+1. Ter o Tomcat ou WildFly instalado no Eclipse.
+
+2. Inserir o Tomcat/WildFly como dependência no 'Java Build Path', aba 'Libraries':
+2.1 Opção 'Add Library' -> 'Server Runtime' -> Escolher Tomcat/WildFly.
+
+3. Alterar o Project Facets:
+3.1 A opção 'Java' deve estar em 1.8 ou maior.
+3.2 A opção 'Dynamic Web Module' deve estar em 3.0 ou maior.
+3.3 No lado direito da janela, clicar na aba 'Runtimes' e escolher o server que será usado (Tomcat/WildFly)
+
+OBS: Para ter o WildFly no Eclipse é necessário instalar o Plugin da JBoss Tools.
+LINK: http://tools.jboss.org/downloads/
+Opção: JBoss Tools 'numero-da-versão'-final

@@ -3,6 +3,7 @@ package pacotes;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import PassagemAerea.PassagemAerea;
@@ -36,19 +37,14 @@ public class Pacote {
         return hospedagens;
     }
 
-    public String consultarPacotes(){
-        StringBuilder passagens = new StringBuilder();
+    public JSONArray consultarPacotes(){
+        JSONArray listaPacotes = new JSONArray();
         for (Map.Entry<Long, JSONObject> entry : this.getPacotes().entrySet()) {
             JSONObject jsonObject = entry.getValue();
-
-            passagens.append("\n");
-            passagens.append("Identificador do pacote: ").append(entry.getKey());
-            passagens.append("\nIdentificador da hospedagem: ").append(jsonObject.getLong("ID_HOSPEDAGEM"));
-            passagens.append("\nIdentificador da passagem: ").append(jsonObject.getLong("ID_PASSAGEM"));
-            passagens.append("\n");
-            passagens.append("\n");
+            jsonObject.put("id", entry.getKey());
+            listaPacotes.put(jsonObject);            
         }
-        return  passagens.toString();
+        return listaPacotes;
     }
 
 

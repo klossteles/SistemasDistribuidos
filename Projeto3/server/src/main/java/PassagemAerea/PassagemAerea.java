@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class PassagemAerea {
@@ -18,32 +19,14 @@ public class PassagemAerea {
         return passagensAereas;
     }
 
-    public String consultarPassagens(){
-        StringBuilder passagens = new StringBuilder();
+    public JSONArray consultarPassagens(){
+        JSONArray listaPassagens = new JSONArray();
         for (Map.Entry<Long, JSONObject> entry : this.getPassagensAereas().entrySet()) {
             JSONObject jsonObject = entry.getValue();
-            passagens.append("\n");
-            passagens.append("Identificador: ").append(entry.getKey());
-            passagens.append("\nDestino: ").append(jsonObject.getString("DESTINO"));
-            passagens.append("\nOrigem: ").append(jsonObject.getString("ORIGEM"));
-            if (jsonObject.has("IDA") && jsonObject.has("DATA_IDA") && jsonObject.getInt("IDA") == 1) {
-                passagens.append("\nIda: ").append("Sim");
-                passagens.append("\nData ida: ").append(jsonObject.get("DATA_IDA"));
-            } else {
-                passagens.append("\nIda: ").append("Não");
-            }
-            if (jsonObject.has("VOLTA") && jsonObject.has("DATA_VOLTA") && jsonObject.getInt("VOLTA") == 1) {
-                passagens.append("\nVolta: ").append("Sim");
-                passagens.append("\nData volta: ").append(jsonObject.get("DATA_VOLTA"));
-            } else {
-                passagens.append("\nVolta: ").append("Não");
-            }
-            passagens.append("\nNum. pessoas: ").append(jsonObject.getInt("NUM_PESSOAS"));
-            passagens.append("\nPreço: ").append(jsonObject.getLong("PRECO"));
-            passagens.append("\n");
-            passagens.append("\n");
+            jsonObject.put("id", entry.getKey());
+            listaPassagens.put(jsonObject);
         }
-        return  passagens.toString();
+        return listaPassagens;
     }
 
     public JSONObject cadastrarNovaPassagem(String destino, String origem, int ida, int volta, String str_ida, String str_volta, int num_pessoas, double preco) {
