@@ -15,7 +15,6 @@ import VueAnimateNumber from 'vue-animate-number'
 import VueCharts from 'vue-chartjs'
 import Tooltip from 'vue-directive-tooltip'
 import Vuetify from 'vuetify'
-import VeeValidate from 'vee-validate'
 
 locale.use(lang)
 // Resource logic
@@ -33,7 +32,6 @@ Vue.use(VueAnimateNumber)
 Vue.use(VueCharts)
 Vue.use(Tooltip)
 Vue.use(Vuetify)
-Vue.use(VeeValidate)
 
 // Import top level component
 import App from './App.vue'

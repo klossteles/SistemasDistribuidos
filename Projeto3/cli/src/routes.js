@@ -3,7 +3,7 @@ import NotFound from './components/modules/dashboard/404.vue'
 import Login from './components/Login.vue'
 import Passagens from './components/modules/passagens/Passagens.vue'
 import Hoteis from './components/modules/hoteis/Hoteis.vue'
-// import Pacotes from './components/modules/pacotes/Pacotes.vue'
+import Pacotes from './components/modules/pacotes/Pacotes.vue'
 
 // Routes
 const routes = [
@@ -41,7 +41,7 @@ const routes = [
       }, {
         path: '/pacotes',
         name: 'pacotes',
-        component: Passagens
+        component: Pacotes
       }, {
         path: '*',
         name: '404',

@@ -117,6 +117,7 @@
         ],
         passagens: [
           {
+            idPassagem: '1542062754',
             destino: 'São Paulo',
             origem: 'Curitiba',
             ida: 1,
@@ -126,6 +127,7 @@
             num_pessoas: 120,
             preco: 150.00
           }, {
+            idPassagem: '1542062779',
             destino: 'Rio de Janeiro',
             origem: 'Curitiba',
             ida: 1,
@@ -183,20 +185,21 @@
       cadastrarPassagem: function () {
         let dataIda = new Date(this.form.dataIda)
         let dataVolta = new Date(this.form.dataVolta)
-        // const data = new window.FormData()
-        // data.append('destino', this.form.destino)
-        // data.append('origem', this.form.origem)
-        // data.append('ida', this.form.ida ? 1 : 0)
-        // data.append('volta', this.form.volta ? 1 : 0)
-        // data.append('data_ida', dataIda)
-        // data.append('data_volta', dataVolta)
-        // data.append('numero_pessoas', this.form.numPessoas)
-        // data.append('preco', this.form.preco)
-        var json = JSON.stringify({destino: this.form.destino, origem: this.form.origem, ida: this.form.ida ? 1 : 0, volta: this.form.volta, data_ida: dataIda, data_volta: dataVolta, numero_pessoas: this.form.numPessoas, preco: this.preco})
-        console.log(json)
+        const data = new window.FormData()
+        data.append('destino', this.form.destino)
+        data.append('origem', this.form.origem)
+        data.append('ida', this.form.ida ? 1 : 0)
+        data.append('volta', this.form.volta ? 1 : 0)
+        data.append('data_ida', dataIda)
+        data.append('data_volta', dataVolta)
+        data.append('numero_pessoas', this.form.numPessoas)
+        data.append('preco', this.form.preco)
+        // var json = JSON.stringify({destino: this.form.destino, origem: this.form.origem, ida: this.form.ida ? 1 : 0, volta: this.form.volta, data_ida: dataIda, data_volta: dataVolta, numero_pessoas: this.form.numPessoas, preco: this.preco})
+        // console.log(json)
         // http://jsonplaceholder.typicode.com/posts
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/cadastrar_passagem', json, {
-          'Content-Type': 'application/json'
+        console.log('Cadastrando')
+        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/cadastrar_passagem', data, {
+          'Content-Type': 'x-www-form-urlencoded'
         }).then(function (response) {
           if (response.data.error !== 'error') {
             Toastr.success('Passagem cadastrada')
