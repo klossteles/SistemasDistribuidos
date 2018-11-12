@@ -23,7 +23,7 @@
             form(role='form')
               .form-group
                 label(for='inputUsernameEmail') Username or email
-                input#inputUsernameEmail.form-control(type='text')
+                input#inputUsernameEmail.form-control(type='text', v-model='user')
               .form-group
                 label(for='inputPassword') Password
                 input#inputPassword.form-control(type='password')
@@ -32,8 +32,8 @@
                   input(type='checkbox')
                   | Remember me
               .row
-                button.btn.btn.btn-primary.pull-right(type='submit', style='width:100%')
-                  router-link(style='color:#fff' to='/passagens') Log In
+                button.btn.btn.btn-primary.pull-right(type='submit', style='width:100%', @click='performLogin') Log In
+                  <!--router-link(style='color:#fff' to='/passagens') Log In-->
               hr
               .row
                 button.btn.btn.btn-primary.pull-right(type='submit', style='width:100%', @click='newUser = true') Create new account
@@ -68,7 +68,8 @@
       return {
         dialogVisible: false,
         newUser: false,
-        visible: false
+        visible: false,
+        user: ''
       }
     },
     methods: {
@@ -82,6 +83,10 @@
       registerUser: function () {
         // Toastr.success('Usuário registrado')
         this.newUser = false
+      },
+      performLogin: function () {
+        localStorage.setItem('user', this.user)
+        this.$router.push('/passagens')
       }
     }
   }

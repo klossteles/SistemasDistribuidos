@@ -13,6 +13,31 @@
 
       section.content
         .box
+          el-form(ref='form' :model='form' label-width='120px', v-if='user === "admin"')
+            el-form-item(label='Destino')
+              el-input(v-model='form.destino')
+            el-form-item(label='Origem')
+              el-input(v-model='form.origem')
+            el-form-item(label='Ida')
+              el-switch(v-model='form.ida')
+            el-form-item(label='Data Ida', v-if='form.ida')
+              el-col(:span='11')
+                el-date-picker(type='date', placeholder='Selecione uma data', v-model='form.dataIda' style='width: 100%;')
+                | -
+                el-time-picker(type='fixed-time', v-model='form.horaIda', placeholder='Hora de ida', style='width: 100%;')
+            el-form-item(label='Volta')
+              el-switch(v-model='form.volta')
+
+            el-form-item(label='Data Volta', v-if='form.volta')
+              el-col(:span='11')
+                el-date-picker(type='date' placeholder='Selecione uma data' v-model='form.dataVolta' style='width: 100%;')
+                | -
+                el-time-picker(type='fixed-time', v-model='form.horaVolta', placeholder='Hora de volta', style='width: 100%;')
+            el-form-item(label='Preço')
+              el-input(type='number', v-model='form.preco', step='0.10')
+            el-button(type='primary', size='small', @click='cadastrarPassagem') Cadastrar Passagem
+
+        .box
           v-data-table.elevation-1(:headers='headers' :items='passagens' hide-actions='')
             template(slot='items', slot-scope='passagem')
               td {{ passagem.item.destino }}
@@ -35,6 +60,19 @@
     name: 'passagens',
     data () {
       return {
+        user: '',
+        form: {
+          destino: 'Rio de Janeiro',
+          origem: 'Curitiba',
+          numPessoas: '15',
+          ida: true,
+          dataIda: '12/11/2018',
+          horaIda: '18:30:00',
+          volta: false,
+          dataVolta: '',
+          horaVolta: '',
+          preco: '150'
+        },
         headers: [
           {
             text: 'Destino',
@@ -100,6 +138,10 @@
         ]
       }
     },
+    created: function () {
+      this.user = localStorage.getItem('user')
+      this.consultarPassagens()
+    },
     methods: {
       formataData: function (data) {
         if (data === '') {
@@ -119,8 +161,50 @@
         }
       },
       comprarPassagem: function (passagem) {
-        this.passagens.push(passagem)
-        Toastr.success('Passagem comprada')
+        const data = new window.FormData()
+        data.append('id', passagem.id)
+        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia', data).then(function (response) {
+          if (response.data.error !== 'error') {
+            Toastr.success('Passagem comprada')
+          } else {
+            Toastr.success(response.data.error)
+          }
+        })
+      },
+      consultarPassagens: function () {
+        Toastr.info('Realizando consulta')
+        this.$http.get('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/consultar_passagens').then(function (response) {
+          if (response.ok) {
+            Toastr.success('Consulta realizada')
+            this.passagens = response.body
+          }
+        })
+      },
+      cadastrarPassagem: function () {
+        let dataIda = new Date(this.form.dataIda)
+        let dataVolta = new Date(this.form.dataVolta)
+        // const data = new window.FormData()
+        // data.append('destino', this.form.destino)
+        // data.append('origem', this.form.origem)
+        // data.append('ida', this.form.ida ? 1 : 0)
+        // data.append('volta', this.form.volta ? 1 : 0)
+        // data.append('data_ida', dataIda)
+        // data.append('data_volta', dataVolta)
+        // data.append('numero_pessoas', this.form.numPessoas)
+        // data.append('preco', this.form.preco)
+        var json = JSON.stringify({destino: this.form.destino, origem: this.form.origem, ida: this.form.ida ? 1 : 0, volta: this.form.volta, data_ida: dataIda, data_volta: dataVolta, numero_pessoas: this.form.numPessoas, preco: this.preco})
+        console.log(json)
+        // http://jsonplaceholder.typicode.com/posts
+        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/cadastrar_passagem', json, {
+          'Content-Type': 'application/json'
+        }).then(function (response) {
+          if (response.data.error !== 'error') {
+            Toastr.success('Passagem cadastrada')
+            this.consultarPassagens()
+          } else {
+            Toastr.success(response.data.error)
+          }
+        })
       }
     }
   }

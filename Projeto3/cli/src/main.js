@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import lang from 'element-ui/lib/locale/lang/pt-br'
+import locale from 'element-ui/lib/locale/'
 import Resource from 'vue-resource'
 import VueRouter from 'vue-router'
 import Bars from 'vuebars'
@@ -15,13 +17,13 @@ import Tooltip from 'vue-directive-tooltip'
 import Vuetify from 'vuetify'
 import VeeValidate from 'vee-validate'
 
+locale.use(lang)
 // Resource logic
 Vue.use(Resource)
 Vue.http.options.emulateJSON = true
 
 Vue.use(VueRouter)
 Vue.use(ElementUI)
-Vue.use(ElementUI, {locale: 'en'})
 Vue.use(Bars)
 Vue.use(Vuebar)
 Vue.use(VueFeatherIcon)
