@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -62,7 +63,7 @@ public class Resources {
 									  @NotNull @FormParam("ida")	   	   	int ida,
 									  @NotNull @FormParam("volta")   	    int volta,
 									  @NotNull @FormParam("data_ida")	    String dataIda,
-									  		   @FormParam("data_volta") 	String dataVolta,
+									  @DefaultValue("") @FormParam("data_volta") 	String dataVolta,
 									  @NotNull @FormParam("numero_pessoas") int numeroPessoas,
 									  @NotNull @FormParam("preco") 	   	    double preco) {
 		

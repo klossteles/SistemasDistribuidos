@@ -76,28 +76,12 @@
 			<version>20180130</version>
 		</dependency>
 
-	<!-- DEPENDÊNCIA JDBC POSTGRESQL -->
-		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.2.5</version>
-		</dependency>
-
 	<!-- DEPENDÊNCIA JAVAEE -->
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 			<version>7.0</version>
 			<scope>provided</scope>
-		</dependency>
-
-	<!-- DEPENDÊNCIA POOL DE CONEXÕES -->
-		<!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
-		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.5.2</version>
 		</dependency>
 	</dependencies>
 </project>
