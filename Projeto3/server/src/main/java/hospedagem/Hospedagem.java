@@ -2,8 +2,6 @@ package hospedagem;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,6 +32,10 @@ public class Hospedagem {
         return hospedagens;
     }
 
+    /**
+     * Consulta as hospedagens cadastradas. Se não houver hospedagens um JSONArray vazio é retornado.
+     * @return
+     */
     public JSONArray consultarHospedagem(){
     	JSONArray listaHospedagens = new JSONArray();
         
@@ -46,6 +48,17 @@ public class Hospedagem {
         return listaHospedagens;
     }
 
+    /**
+     * Cria uma nova hospedagem. Todos os parâmetros são obrigatórios.
+     * 
+     * @param destino
+     * @param entrada
+     * @param saida
+     * @param num_pessoas
+     * @param preco
+     * @param num_quartos
+     * @return
+     */
     public JSONObject cadastrarNovaHospedagem(String destino, String entrada, String saida, int num_pessoas, double preco, int num_quartos) {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     	LocalDateTime data_entrada = LocalDateTime.parse(entrada, format);
@@ -67,6 +80,14 @@ public class Hospedagem {
         return jo;
     }
 
+    /**
+     * Método responsável pela compra de hospedagens
+     * Na compra é removida uma hospedagens, quando o número de hospedagens chega a 
+     * zero, o hospedagens é removida do HashMap
+     * 
+     * @param identificador
+     * @return 
+     */
     public boolean comprarHospedagem (Long identificador) {
         if (!this.getHospedagens().containsKey(identificador)) {
             return false;
@@ -83,6 +104,14 @@ public class Hospedagem {
         return true;
     }
 
+    /**
+     * Caso na compra de um pacote ocorra um erro 
+     * é importante retornar o valor para o valor anterior,
+     * ou seja, +1
+     * 
+     * @param id
+     * @return 
+     */
     public boolean addHospedagem (Long id) {
         if (!this.getHospedagens().containsKey(id)) {
             return false;

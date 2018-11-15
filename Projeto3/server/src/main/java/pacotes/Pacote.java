@@ -37,6 +37,10 @@ public class Pacote {
         return hospedagens;
     }
 
+    /**
+     * Consulta os pacotes cadastrados. Se não houver pacotes um JSONArray vazio é retornado.
+     * @return
+     */
     public JSONArray consultarPacotes(){
         JSONArray listaPacotes = new JSONArray();
         for (Map.Entry<Long, JSONObject> entry : this.getPacotes().entrySet()) {
@@ -49,7 +53,9 @@ public class Pacote {
 
 
     /**
-     * Cria um novo pacote, utilizando o destino da passagem como KEY.
+     * Cria um novo pacote, considerando os identificadores de passagem e hospedagem.
+     * O destino do pacote é definido como o destino da Passagem.
+     * O valor do pacote é a soma dos valores da passagem e da hospedagem.
      *
      * @param id_hospedagem
      * @param id_passagem
@@ -82,6 +88,14 @@ public class Pacote {
         return jo;
     }
 
+    /**
+     * Método responsável pela compra de pacotes
+     * Na compra é removida uma pacotes, quando o número de pacotes chega a 
+     * zero, o pacotes é removida do HashMap
+     * 
+     * @param id
+     * @return 
+     */
     public boolean comprarPacote(Long id) {
         JSONObject pacote = this.getPacotes().get(id);
         Long id_passagem = pacote.getLong("ID_PASSAGEM");

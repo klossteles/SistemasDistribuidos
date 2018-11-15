@@ -2,8 +2,6 @@ package PassagemAerea;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +19,10 @@ public class PassagemAerea {
         return passagensAereas;
     }
 
+    /**
+     * Consulta as passagens cadastradas. Se não houver passagens um JSONArray vazio é retornado.
+     * @return
+     */
     public JSONArray consultarPassagens(){
         JSONArray listaPassagens = new JSONArray();
         for (Map.Entry<Long, JSONObject> entry : this.getPassagensAereas().entrySet()) {
@@ -31,6 +33,18 @@ public class PassagemAerea {
         return listaPassagens;
     }
 
+    /**
+     * Cria uma nova Passagem. Os parâmetros 'ida' e 'volta' definem se os parâmetros 'str_ida' e 'str_volta' são obrigatórios.
+     * @param destino
+     * @param origem
+     * @param ida
+     * @param volta
+     * @param str_ida
+     * @param str_volta
+     * @param num_pessoas
+     * @param preco
+     * @return
+     */
     public JSONObject cadastrarNovaPassagem(String destino, String origem, int ida, int volta, String str_ida, String str_volta, int num_pessoas, double preco) {
         if (ida == 1 && (str_ida == null || str_ida.equalsIgnoreCase(""))){
             System.out.println("É necessário informar a data da passagem de ida.");
@@ -63,6 +77,14 @@ public class PassagemAerea {
         return jo;
     }
 
+    /**
+     * Método responsável pela compra de passagem
+     * Na compra é removida uma passagem, quando o número de passagem chega a 
+     * zero, o passagem é removida do HashMap
+     * 
+     * @param identificador
+     * @return 
+     */
     public boolean comprarPassagem (Long identificador) {
         if (!this.getPassagensAereas().containsKey(identificador)) {
             return false;
@@ -79,6 +101,14 @@ public class PassagemAerea {
         return true;
     }
 
+    /**
+     * Caso na compra de um pacote ocorra um erro 
+     * é importante retornar o valor para o valor anterior,
+     * ou seja, +1
+     * 
+     * @param id
+     * @return 
+     */
     public boolean addPassagem (Long id) {
         if (!this.getPassagensAereas().containsKey(id)) {
             return false;

@@ -18,42 +18,77 @@ import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONObject;
 
+/**
+ * Classe que implementa os recursos da aplicação (URIs, Endpoints).
+ * 
+ * @author Brendon
+ *
+ */
 @Path("agencia")
 public class Resources {
 
 	@Context
 	HttpServletRequest request;
-	
+
+	/**
+	 * URI para teste da aplicação.
+	 * @return
+	 */
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String teste() {
 		return "Rota OK";
 	}
 	
+	/**
+	 * URI para consulta das passagens cadastradas na aplicação.
+	 * @return
+	 */
 	@GET
 	@Path("consultar_passagens")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String consultarPassagens() {
+	public Response consultarPassagens() {
 		Server server = (Server) request.getAttribute("server");
-		return server.getPassagens().consultarPassagens().toString();
+		return Response.status(Status.OK).entity(server.getPassagens().consultarPassagens().toString()).build();
 	}
 	
+	/**
+	 * URI para consulta das hospedagens cadastradas na aplicação.
+	 * @return
+	 */
 	@GET
 	@Path("consultar_hospedagens")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String consultarHospedagens() {
+	public Response consultarHospedagens() {
 		Server server = (Server) request.getAttribute("server");
-		return server.getHospedagens().consultarHospedagem().toString();
+		return Response.status(Status.OK).entity(server.getHospedagens().consultarHospedagem().toString()).build();
 	}
 	
+	/**
+	 * URI para consulta dos pacotes cadastradas na aplicação.
+	 * @return
+	 */
 	@GET
 	@Path("consultar_pacotes")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String consultarPacotes() {
+	public Response consultarPacotes() {
 		Server server = (Server) request.getAttribute("server");
-		return server.getPacotes().consultarPacotes().toString();
+		return Response.status(Status.OK).entity(server.getPacotes().consultarPacotes().toString()).build();
 	}
 	
+	/**
+	 * URI para cadastro de uma nova passagem. O parâmetro 'data_volta' é opcional.
+	 * 
+	 * @param destino
+	 * @param origem
+	 * @param ida
+	 * @param volta
+	 * @param dataIda
+	 * @param dataVolta
+	 * @param numeroPessoas
+	 * @param preco
+	 * @return
+	 */
 	@POST
 	@Path("cadastrar_passagem")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -72,6 +107,12 @@ public class Resources {
 		return resposta == null ? getError("Falha ao Cadastrar Passagem") : getSucess("Passagem Cadastrada.");
 	}
 	
+	/**
+	 * URI para a compra de uma nova passagem.
+	 * 
+	 * @param id - Identificador da passagem a ser comprada.
+	 * @return
+	 */
 	@POST
 	@Path("comprar_passagem")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -83,7 +124,17 @@ public class Resources {
 		return resposta ? getSucess("Passagem Comprada.") : getError("Falha ao Comprar Passagem.");
 	}
 	
-
+	/**
+	 * URI para cadastro de uma nova hospedagem. Todos os parâmetros são obrigatórios.
+	 * 
+	 * @param destino
+	 * @param dataEntrada
+	 * @param dataSaida
+	 * @param numeroPessoas
+	 * @param numeroQuartos
+	 * @param preco
+	 * @return
+	 */
 	@POST
 	@Path("cadastrar_hospedagem")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -100,6 +151,12 @@ public class Resources {
 		return resposta == null ? getError("Falha ao Cadastrar Passagem") : getSucess("Passagem Cadastrada.");
 	}
 
+	/**
+	 * URI para a compra de uma nova hospedagem.
+	 * 
+	 * @param id - Identificador da hospedagem a ser comprada.
+	 * @return
+	 */
 	@POST
 	@Path("comprar_hospedagem")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -111,6 +168,13 @@ public class Resources {
 		return resposta ? getSucess("Hospedagem Comprada.") : getError("Falha ao Comprar Hospedagem.");
 	}
 	
+	/**
+	 * URI para cadastro de um novo pacote. Todos os parâmetros são obrigatórios.
+	 * 
+	 * @param idHospedagem
+	 * @param idPassagem
+	 * @return
+	 */
 	@POST
 	@Path("cadastrar_pacote")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -125,6 +189,12 @@ public class Resources {
 		return resposta == null ?  getError("Falha ao Cadastrar Pacote.") : getSucess("Pacote Cadastrado.");
 	}
 
+	/**
+	 * URI para a compra de um novo pacote.
+	 * 
+	 * @param id - Identificador do pacote a ser comprado.
+	 * @return
+	 */
 	@POST
 	@Path("comprar_pacote")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -136,10 +206,24 @@ public class Resources {
 		return resposta ? getSucess("Passagem Comprada.") : getError("Falha ao Comprar Passagem.");
 	}
 	
+	/**
+	 * Método que constrói um objeto 'Response' com status OK (HTTP 200) e com a mensagem
+	 * recebida por parâmetro.
+	 * 
+	 * @param mensagem
+	 * @return
+	 */
 	private Response getSucess(String mensagem) {
 		return Response.status(Status.OK).entity(mensagem).build();
 	}
 	
+	/**
+	 * Método que constrói um objeto 'Response' com status BAD_REQUEST (HTTP 400) e com a mensagem
+	 * recebida por parâmetro.
+	 * 
+	 * @param mensagem
+	 * @return
+	 */
 	private Response getError(String mensagem) {
 		return Response.status(Status.BAD_REQUEST).entity(mensagem).build();
 	}

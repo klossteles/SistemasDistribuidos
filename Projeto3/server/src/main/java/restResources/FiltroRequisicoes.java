@@ -12,6 +12,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 
+/**
+ * Classe que implementa um filtro de requisições e é responsável por inserir
+ * em cada requisição o objeto Server, que gerência os dados referentes a
+ * passagens, hospedagens e pacotes.
+ *  
+ * @author Brendon
+ */
 @WebFilter("/*")
 public class FiltroRequisicoes implements Filter{
 

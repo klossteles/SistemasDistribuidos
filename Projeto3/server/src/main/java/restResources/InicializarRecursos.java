@@ -7,7 +7,14 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-
+/**
+ * Classe que instância um objeto Server, responsável por gerenciar a camada
+ * de negócios da aplicação.
+ * Essa classe garante que o objeto Server é criado apenas uma vez, fazendo
+ * com que todas as threads da aplicação "enxergem" os mesmos dados.
+ * 
+ * @author Brendon
+ */
 @WebListener
 public class InicializarRecursos implements ServletContextListener{
 

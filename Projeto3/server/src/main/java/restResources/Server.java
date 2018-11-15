@@ -5,6 +5,7 @@ import hospedagem.Hospedagem;
 import pacotes.Pacote;
 
 /**
+ * Classe que centraliza a lógica de negócio da aplicação.
  *
  * @author Brendon & Lucas
  */
