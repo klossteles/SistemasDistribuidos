@@ -16,17 +16,18 @@
           el-form(ref='form' :model='form' label-width='120px', v-if='user === "admin"')
             el-form-item(label='Hospedagens')
               el-select(v-model='form.idHospedagem' clearable, placeholder='Hospedagens')
-                el-option(v-for='item in form.hospedagens', :key='item.idHospedagem', :label='item.destino', :value='item.idHospedagem')
+                el-option(v-for='item in form.hospedagens', :key='item.id', :label='item.DESTINO', :value='item.id')
             el-form-item(label='Passagens')
               el-select(v-model='form.idPassagem', clearable, placeholder='Passagens')
-                el-option(v-for='item in form.passagens', :key='item.idPassagem', :label='item.destino', :value='item.idPassagem')
-            el-button(type='primary', size='small', @click='cadastrarPacote') Cadastrar Pacote
+                el-option(v-for='item in form.passagens', :key='item.id', :label='item.DESTINO', :value='item.id')
+            div.btn-center
+              button.btn.btn.btn-primary.btm-sm(@click='cadastrarPacote') Cadastrar Pacote
 
         .box
           v-data-table.elevation-1(:headers='headers' :items='pacotes' hide-actions='')
             template(slot='items', slot-scope='pacote')
-              td {{ pacote.item.id_passagem }}
-              td {{ pacote.item.id_hospedagem }}
+              td {{ pacote.item.ID_PASSAGEM }}
+              td {{ pacote.item.ID_HOSPEDAGEM }}
               td.justify-center.layout.px-0
                 v-icon(small, @click='comprarPacote(pacote.item)') fa-shopping-cart
             template(slot='no-data')
@@ -41,48 +42,12 @@
     data () {
       return {
         user: '',
+        pacotes: [],
         form: {
           idPassagem: '',
           idHospedagem: '',
-          pacotes: [],
-          passagens: [
-            {
-              idPassagem: '1542062754',
-              destino: 'São Paulo',
-              origem: 'Curitiba',
-              ida: 1,
-              volta: 1,
-              data_ida: '11/03/2018 14:15:16',
-              data_volta: '11/04/2018',
-              num_pessoas: 120,
-              preco: 150.00
-            }, {
-              idPassagem: '1542062779',
-              destino: 'Rio de Janeiro',
-              origem: 'Curitiba',
-              ida: 1,
-              volta: 0,
-              data_ida: '03/11/2018',
-              data_volta: '',
-              num_pessoas: 120,
-              preco: 100.00
-            }
-          ],
-          hospedagens: [
-            {
-              idHospedagem: '1542062779',
-              destino: 'São Paulo',
-              origem: 'Curitiba',
-              num_pessoas: 120,
-              preco: 150.00
-            }, {
-              idHospedagem: '1542062779',
-              destino: 'Rio de Janeiro',
-              origem: 'Curitiba',
-              num_pessoas: 120,
-              preco: 100.00
-            }
-          ]
+          passagens: [],
+          hospedagens: []
         },
         headers: [
           {
@@ -105,41 +70,66 @@
     },
     created: function () {
       this.user = localStorage.getItem('user')
-      // this.consultarHospedagens()
-      // this.consultarPassagens()
-      // this.consultarPacotes()
+      if (this.user === undefined || this.user === '') {
+        this.$router.push('/login')
+      } else {
+        this.reloadFields()
+      }
     },
     methods: {
+      reloadFields: function () {
+        this.consultarPassagens()
+        this.consultarHospedagens()
+        this.consultarPacotes()
+      },
       comprarPacote: function (pacote) {
-        const data = new window.FormData()
-        data.append('id', pacote.id)
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia', data).then(function (response) {
-          if (response.data.error !== 'error') {
-            Toastr.success('Pacote comprado')
-          } else {
-            Toastr.success(response.data.error)
-          }
+        let data = {
+          'id_pacote': pacote.id
+        }
+        this.$http.post('comprar_pacote', data).then(response => {
+          Toastr.success('Pacote comprado')
+        }, error => {
+          Toastr.error(error.body)
         })
       },
       consultarPacotes: function () {
-        this.$http.get('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/consultar_pacotes').then(function (response) {
-          if (response.ok) {
-            this.pacotes = response.body
+        this.$http.get('consultar_pacotes').then(response => {
+          return response.json()
+        }, error => {
+          console.log(error)
+        }).then(data => {
+          const result = []
+          for (let key in data) {
+            result.push(data[key])
           }
+          this.pacotes = result
+          console.log(this.pacotes)
         })
       },
       consultarHospedagens: function () {
-        this.$http.get('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/consultar_hospedagens').then(function (response) {
-          if (response.ok) {
-            this.form.hospedagens = response.body
+        this.$http.get('consultar_hospedagens').then(response => {
+          return response.json()
+        }, error => {
+          console.log(error)
+        }).then(data => {
+          const result = []
+          for (let key in data) {
+            result.push(data[key])
           }
+          this.form.hospedagens = result
         })
       },
       consultarPassagens: function () {
-        this.$http.get('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/consultar_passagens').then(function (response) {
-          if (response.ok) {
-            this.form.passagens = response.body
+        this.$http.get('consultar_passagens').then(response => {
+          return response.json()
+        }, error => {
+          console.log(error)
+        }).then(data => {
+          const result = []
+          for (let key in data) {
+            result.push(data[key])
           }
+          this.form.passagens = result
         })
       },
       cadastrarPacote: function () {
@@ -151,17 +141,15 @@
           Toastr.error('Necessário informar o identificador da passagem.')
           return
         }
-        var json = JSON.stringify({id_hospedagem: this.form.idHospedagem, id_passagem: this.form.idPassagem})
-        // http://jsonplaceholder.typicode.com/posts
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/cadastrar_pacote', json, {
-          'Content-Type': 'application/json'
-        }).then(function (response) {
-          if (response.data.error !== 'error') {
-            Toastr.success('Pacote cadastrado')
-            this.consultarPacotes()
-          } else {
-            Toastr.success(response.data.error)
-          }
+        var json = {
+          'id_hospedagem': this.form.idHospedagem,
+          'id_passagem': this.form.idPassagem
+        }
+        this.$http.post('cadastrar_pacote', json).then(response => {
+          Toastr.success('Pacote cadastrado')
+          this.reloadFields()
+        }, error => {
+          Toastr.error(error.body)
         })
       }
     }
@@ -169,5 +157,7 @@
 </script>
 
 <style scoped>
-
+  .btn-center {
+    text-align: center;
+  }
 </style>

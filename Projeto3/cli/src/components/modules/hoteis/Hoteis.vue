@@ -16,26 +16,27 @@
           el-form(ref='form' :model='form' label-width='120px', v-if='user === "admin"')
             el-form-item(label='Destino')
               el-input(v-model='form.destino')
-            el-form-item(label='Data Entrada/Saída')
-              el-date-picker(type='date', placeholder='Selecione uma data', v-model='form.dataEntrada' style='width: 100%;')
-              | -
-              el-date-picker(type='date' placeholder='Selecione uma data' v-model='form.dataSaida' style='width: 100%;')
+            el-form-item(label='Data')
+              el-date-picker(type='daterange', placeholder='Selecione uma data', range-separator="até", start-placeholder='Data inicial',
+                end-placeholder='Data final', v-model='form.dataRange', style='width: 100%;', format='dd/MM/yyyy')
             el-form-item(label='Num. pessoas')
               el-input(type='number', v-model='form.numPessoas')
             el-form-item(label='Num. Quartos')
               el-input(type='number', v-model='form.numQuartos')
             el-form-item(label='Preço')
               el-input(type='number', v-model='form.preco', step='0.10')
-            el-button(type='primary', size='small', @click='cadastrarHotel') Cadastrar Hotel
+            div.btn-center
+              button.btn.btn.btn-primary.btm-sm(@click='cadastrarHospedagem') Cadastrar Hospedagem
         .box
           v-data-table.elevation-1(:headers='headers' :items='hospedagens' hide-actions='')
             template(slot='items', slot-scope='hotel')
-              td {{ hotel.item.destino }}
-              td {{ hotel.item.dataEntrada }}
-              td {{ hotel.item.dataSaida }}
-              td {{ hotel.item.num_pessoas }}
-              td {{ hotel.item.num_quartos }}
-              td R$ {{ hotel.item.preco }}
+              td {{ hotel.item.id }}
+              td {{ hotel.item.DESTINO }}
+              td {{ hotel.item.DATA_ENTRADA }}
+              td {{ hotel.item.DATA_SAIDA }}
+              td {{ hotel.item.NUM_PESSOAS }}
+              td {{ hotel.item.NUM_QUARTOS }}
+              td R$ {{ hotel.item.PRECO }}
               td.justify-center.layout.px-0
                 v-icon(small, @click='comprarHospedagem(hotel.item)') fa-shopping-cart
             template(slot='no-data')
@@ -48,109 +49,110 @@
   export default {
     name: 'hoteis',
     data () {
-      return {user: '',
+      return {
+        user: '',
         form: {
-          destino: 'Rio de Janeiro',
-          dataEntrada: '12/11/2018',
-          dataSaida: '13/11/2018',
-          numPessoas: '3',
-          numQuartos: '2',
-          preco: '150'
+          destino: '',
+          dataRange: '',
+          numPessoas: '',
+          numQuartos: '',
+          preco: ''
         },
         headers: [
           {
+            text: 'Id.',
+            align: 'center',
+            sortable: true,
+            value: 'id'
+          }, {
             text: 'Destino',
             align: 'center',
             sortable: true,
-            value: 'destino'
+            value: 'DESTINO'
           }, {
             text: 'Data Entrada',
             align: 'center',
             sortable: true,
-            value: 'dataEntrada'
+            value: 'DATA_ENTRADA'
           }, {
             text: 'Data Saída',
             align: 'center',
             sortable: true,
-            value: 'dataSaida'
+            value: 'DATA_SAIDA'
           }, {
             text: 'Num. Pessoas',
             align: 'center',
             sortable: false,
-            value: 'num_pessoas'
+            value: 'NUM_PESSOAS'
           }, {
             text: 'Num. Quartos',
             align: 'center',
             sortable: true,
-            value: 'num_quartos'
+            value: 'NUM_QUARTOS'
           }, {
             text: 'Preço',
             align: 'center',
             sortable: true,
-            value: 'preco'
+            value: 'PRECO'
           }, {
             text: '',
             value: 'name',
             sortable: false
           }
         ],
-        hospedagens: [
-          {
-            idHospedagem: '1542062779',
-            destino: 'São Paulo',
-            origem: 'Curitiba',
-            num_pessoas: 120,
-            preco: 150.00
-          }, {
-            idHospedagem: '1542062779',
-            destino: 'Rio de Janeiro',
-            origem: 'Curitiba',
-            num_pessoas: 120,
-            preco: 100.00
-          }
-        ]
+        hospedagens: []
       }
     },
     created: function () {
       this.user = localStorage.getItem('user')
-      this.consultarHoteis()
+      if (this.user === undefined || this.user === '') {
+        this.$router.push('/login')
+      } else {
+        this.consultarHospedagens()
+      }
     },
     methods: {
       comprarHospedagem: function (hotel) {
-        const data = new window.FormData()
-        data.append('id', hotel.id)
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia', data).then(function (response) {
-          if (response.data.error !== 'error') {
-            Toastr.success('Hotel comprada')
-          } else {
-            Toastr.success(response.data.error)
-          }
+        let data = {
+          'id_hospedagem': hotel.id
+        }
+        this.$http.post('comprar_hospedagem', data).then(response => {
+          Toastr.success('Hotel comprada')
+          this.consultarHospedagens()
+        }, error => {
+          console.log(error)
         })
       },
-      consultarHoteis: function () {
-        Toastr.info('Realizando consulta')
-        this.$http.get('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/consultar_hospedagens').then(function (response) {
-          if (response.ok) {
-            Toastr.success('Consulta realizada')
-            this.hospedagens = response.body
+      consultarHospedagens: function () {
+        this.$http.get('consultar_hospedagens').then(response => {
+          return response.json()
+        }, error => {
+          console.log(error)
+        }).then(data => {
+          const result = []
+          for (let key in data) {
+            result.push(data[key])
           }
+          this.hospedagens = result
         })
       },
-      cadastrarHotel: function () {
-        let dataEntrada = new Date(this.form.dataEntrada)
-        let dataSaida = new Date(this.form.dataSaida)
-        var json = JSON.stringify({destino: this.form.destino, num_quartos: this.form.numQuartos, num_pessoas: this.form.numPessoas, data_entrada: dataEntrada, data_saida: dataSaida, preco: this.preco})
-        console.log(json)
-        // http://jsonplaceholder.typicode.com/posts
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/cadastrar_hospedagem', json, {
-          'Content-Type': 'application/json'
-        }).then(function (response) {
-          if (response.data.error !== 'error') {
-            Toastr.success('Hotel cadastrado')
-            this.consultarHoteis()
-          } else {
-            Toastr.success(response.data.error)
-          }
+      cadastrarHospedagem: function () {
+        let rangeArr = JSON.stringify(this.form.dataRange).split(',')
+        let dataEntrada = rangeArr[0].slice(2, rangeArr[0].length - 1)
+        let dataSaida = rangeArr[1].slice(1, rangeArr[1].length - 2)
+        var json = {
+          'destino': this.form.destino,
+          'numero_quartos': this.form.numQuartos,
+          'numero_pessoas': this.form.numPessoas,
+          'data_entrada': dataEntrada,
+          'data_saida': dataSaida,
+          'preco': this.form.preco
+        }
+        this.$http.post('cadastrar_hospedagem', json).then(response => {
+          Toastr.success('Hospedagem cadastrada')
+          this.consultarHospedagens()
+        }, error => {
+          Toastr.error(error.body)
         })
       }
     }
@@ -158,5 +160,7 @@
 </script>
 
 <style scoped>
-
+  .btn-center {
+    text-align: center;
+  }
 </style>

@@ -1,5 +1,7 @@
 package hospedagem;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -45,23 +47,10 @@ public class Hospedagem {
     }
 
     public JSONObject cadastrarNovaHospedagem(String destino, String entrada, String saida, int num_pessoas, double preco, int num_quartos) {
-        String[] aux_entrada = entrada.split("/");
-        String[] aux_saida = saida.split("/");
-        if (aux_entrada.length < 3) {
-            System.out.println("Data de entrada inválida.");
-            return null;
-        }
-        if (aux_saida.length < 3) {
-            System.out.println("Data de saída inválida.");
-            return null;
-        }
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Integer.parseInt(aux_entrada[2]), Integer.parseInt(aux_entrada[1]), Integer.parseInt(aux_entrada[0]));
-        Date data_entrada = cal.getTime();
-        cal.set(Integer.parseInt(aux_saida[2]), Integer.parseInt(aux_saida[1]), Integer.parseInt(aux_saida[0]));
-        Date data_saida = cal.getTime();
-        if (data_entrada.after(data_saida)) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    	LocalDateTime data_entrada = LocalDateTime.parse(entrada, format);
+        LocalDateTime data_saida = LocalDateTime.parse(saida, format);
+        if (data_entrada.isAfter(data_saida)) {
             System.out.println("Data de entrada não pode ser posterior a data de saída.");
             return null;
         }

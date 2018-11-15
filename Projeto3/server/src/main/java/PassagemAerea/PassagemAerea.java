@@ -1,5 +1,7 @@
 package PassagemAerea;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -38,33 +40,11 @@ public class PassagemAerea {
             System.out.println("É necessário informar a data da passagem de volta.");
             return null;
         }
-
-        String[] aux_ida = str_ida.split("/");
-        String[] aux_volta = str_volta.split("/");
-        if (ida == 1 && aux_ida.length < 3) {
-            System.out.println("Data de ida inválida.");
-            return null;
-        }
-        if (volta == 1 && aux_volta.length < 3) {
-            System.out.println("Data de volta inválida.");
-            return null;
-        }
-
-        Calendar cal = Calendar.getInstance();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        LocalDateTime data_ida = LocalDateTime.parse(str_ida, format);
+        LocalDateTime data_volta = LocalDateTime.parse(str_volta, format);
         
-        Date data_ida = null;
-        if(ida == 1){
-            cal.set(Integer.parseInt(aux_ida[2]), Integer.parseInt(aux_ida[1]), Integer.parseInt(aux_ida[0]));
-            data_ida = cal.getTime();
-        }
-        
-        Date data_volta = null;
-        if(volta == 1){
-            cal.set(Integer.parseInt(aux_volta[2]), Integer.parseInt(aux_volta[1]), Integer.parseInt(aux_volta[0]));
-            data_volta = cal.getTime();
-        }
-        
-        if (data_ida != null && data_volta != null && data_ida.after(data_volta)) {
+        if (data_ida != null && data_volta != null && data_ida.isAfter(data_volta)) {
             System.out.println("Data de entrada não pode ser posterior a data de saída.");
             return null;
         }

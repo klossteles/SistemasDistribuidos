@@ -60,18 +60,30 @@ public class Resources {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response cadastrarPassagem(@NotNull @FormParam("destino")   	    String destino, 
 									  @NotNull @FormParam("origem")  	    String origem,
-									  @NotNull @FormParam("ida")	   	   	int ida,
-									  @NotNull @FormParam("volta")   	    int volta,
+									  @NotNull @FormParam("ida")	   	   	String ida,
+									  @NotNull @FormParam("volta")   	    String volta,
 									  @NotNull @FormParam("data_ida")	    String dataIda,
 									  @DefaultValue("") @FormParam("data_volta") 	String dataVolta,
-									  @NotNull @FormParam("numero_pessoas") int numeroPessoas,
-									  @NotNull @FormParam("preco") 	   	    double preco) {
+									  @NotNull @FormParam("numero_pessoas") String numeroPessoas,
+									  @NotNull @FormParam("preco") 	   	    String preco) {
 		
 		Server server = (Server) request.getAttribute("server");
-		JSONObject resposta = server.getPassagens().cadastrarNovaPassagem(destino, origem, ida, volta, dataIda, dataVolta, numeroPessoas, preco);
-		return resposta == null ? Response.status(Status.BAD_REQUEST).build() : Response.status(Status.CREATED).build();
+		JSONObject resposta = server.getPassagens().cadastrarNovaPassagem(destino, origem, Integer.parseInt(ida), Integer.parseInt(volta), dataIda, dataVolta, Integer.parseInt(numeroPessoas), Double.parseDouble(preco));
+		return resposta == null ? getError("Falha ao Cadastrar Passagem") : getSucess("Passagem Cadastrada.");
 	}
 	
+	@POST
+	@Path("comprar_passagem")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response comprarPassagem(@NotNull @FormParam("id_passagem") Long id) {
+		Server server = (Server) request.getAttribute("server");
+		
+		boolean resposta = server.getPassagens().comprarPassagem(id);
+		return resposta ? getSucess("Passagem Comprada.") : getError("Falha ao Comprar Passagem.");
+	}
+	
+
 	@POST
 	@Path("cadastrar_hospedagem")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -79,26 +91,56 @@ public class Resources {
 	public Response cadastrarHospedagem(@NotNull @FormParam("destino")   	  String destino, 
 									    @NotNull @FormParam("data_entrada")   String dataEntrada,
 									    @NotNull @FormParam("data_saida")	  String dataSaida,
-									    @NotNull @FormParam("numero_pessoas") int numeroPessoas,
-									    @NotNull @FormParam("numero_quartos") int numeroQuartos,
-									    @NotNull @FormParam("preco") 	   	  double preco) {
+									    @NotNull @FormParam("numero_pessoas") String numeroPessoas,
+									    @NotNull @FormParam("numero_quartos") String numeroQuartos,
+									    @NotNull @FormParam("preco") 	   	  String preco) {
 		
 		Server server = (Server) request.getAttribute("server");
-		JSONObject resposta = server.getHospedagens().cadastrarNovaHospedagem(destino, dataEntrada, dataSaida, numeroPessoas, preco, numeroQuartos);
-		return resposta == null ? Response.status(Status.BAD_REQUEST).build() : Response.status(Status.CREATED).build();
+		JSONObject resposta = server.getHospedagens().cadastrarNovaHospedagem(destino, dataEntrada, dataSaida, Integer.parseInt(numeroPessoas), Double.parseDouble(preco), Integer.parseInt(numeroQuartos));
+		return resposta == null ? getError("Falha ao Cadastrar Passagem") : getSucess("Passagem Cadastrada.");
+	}
+
+	@POST
+	@Path("comprar_hospedagem")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response comprarHospedagem(@NotNull @FormParam("id_hospedagem") Long id) {
+		Server server = (Server) request.getAttribute("server");
+		
+		boolean resposta = server.getHospedagens().comprarHospedagem(id);
+		return resposta ? getSucess("Hospedagem Comprada.") : getError("Falha ao Comprar Hospedagem.");
 	}
 	
 	@POST
 	@Path("cadastrar_pacote")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response cadastrarHospedagem(@NotNull @FormParam("id_hospedagem") Long idHospedagem, 
-									    @NotNull @FormParam("id_passagem")   Long idPassagem) {
+	public Response cadastrarHospedagem(@NotNull @FormParam("id_hospedagem") String idHospedagem, 
+									    @NotNull @FormParam("id_passagem")   String idPassagem) {
 		
 		Server server = (Server) request.getAttribute("server");
 		ConcurrentHashMap<Long, JSONObject> passagens = server.getPassagens().getPassagensAereas();
 		ConcurrentHashMap<Long, JSONObject> hospedagens = server.getHospedagens().getHospedagens();
-		JSONObject resposta = server.getPacotes().cadastrarNovoPacote(idHospedagem, idPassagem, hospedagens, passagens);
-		return resposta == null ? Response.status(Status.BAD_REQUEST).build() : Response.status(Status.CREATED).build();
+		JSONObject resposta = server.getPacotes().cadastrarNovoPacote(Long.parseLong(idHospedagem), Long.parseLong(idPassagem), hospedagens, passagens);
+		return resposta == null ?  getError("Falha ao Cadastrar Pacote.") : getSucess("Pacote Cadastrado.");
+	}
+
+	@POST
+	@Path("comprar_pacote")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response comprarPacote(@NotNull @FormParam("id_pacote") Long id) {
+		Server server = (Server) request.getAttribute("server");
+		
+		boolean resposta = server.getPacotes().comprarPacote(id);
+		return resposta ? getSucess("Passagem Comprada.") : getError("Falha ao Comprar Passagem.");
+	}
+	
+	private Response getSucess(String mensagem) {
+		return Response.status(Status.OK).entity(mensagem).build();
+	}
+	
+	private Response getError(String mensagem) {
+		return Response.status(Status.BAD_REQUEST).entity(mensagem).build();
 	}
 }

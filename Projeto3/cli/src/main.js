@@ -33,6 +33,9 @@ Vue.use(VueCharts)
 Vue.use(Tooltip)
 Vue.use(Vuetify)
 
+Vue.http.options.root = 'http://localhost:8080/projeto3/agencia'
+// Vue.http.options.headers = {'Content-type': 'application/json'}
+
 // Import top level component
 import App from './App.vue'
 import 'bootstrap/dist/css/bootstrap.css'

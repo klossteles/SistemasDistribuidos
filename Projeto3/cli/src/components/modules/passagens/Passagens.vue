@@ -15,38 +15,32 @@
         .box
           el-form(ref='form' :model='form' label-width='120px', v-if='user === "admin"')
             el-form-item(label='Destino')
-              el-input(v-model='form.destino')
+              el-input(v-model='form.destino', style='width: 45%')
             el-form-item(label='Origem')
-              el-input(v-model='form.origem')
+              el-input(v-model='form.origem' style='width: 45%')
             el-form-item(label='Ida')
-              el-switch(v-model='form.ida')
-            el-form-item(label='Data Ida', v-if='form.ida')
-              el-col(:span='11')
-                el-date-picker(type='date', placeholder='Selecione uma data', v-model='form.dataIda' style='width: 100%;')
-                | -
-                el-time-picker(type='fixed-time', v-model='form.horaIda', placeholder='Hora de ida', style='width: 100%;')
+              el-date-picker(v-if='form.ida', type='datetime', placeholder='Selecione uma data e hora', v-model='form.dataIda', style='width: 40%; margin-left: 10px')
             el-form-item(label='Volta')
               el-switch(v-model='form.volta')
-
-            el-form-item(label='Data Volta', v-if='form.volta')
-              el-col(:span='11')
-                el-date-picker(type='date' placeholder='Selecione uma data' v-model='form.dataVolta' style='width: 100%;')
-                | -
-                el-time-picker(type='fixed-time', v-model='form.horaVolta', placeholder='Hora de volta', style='width: 100%;')
+              el-date-picker(v-if='form.volta', type='datetime', placeholder='Selecione uma data e hora', v-model='form.dataVolta', style='width: 40%; margin-left: 10px')
+            el-form-item(label='Num. pessoas')
+              el-input(type='number', v-model='form.numPessoas', style='width: 20%;')
             el-form-item(label='Preço')
-              el-input(type='number', v-model='form.preco', step='0.10')
-            el-button(type='primary', size='small', @click='cadastrarPassagem') Cadastrar Passagem
+              el-input(type='number', v-model='form.preco', step='0.10', style='width: 20%;')
+            div.btn-center
+              button.btn.btn.btn-primary.btm-sm(@click='cadastrarPassagem') Cadastrar Passagem
 
         .box
           v-data-table.elevation-1(:headers='headers' :items='passagens' hide-actions='')
             template(slot='items', slot-scope='passagem')
-              td {{ passagem.item.destino }}
-              td {{ passagem.item.origem }}
+              td {{ passagem.item.id }}
+              td {{ passagem.item.DESTINO }}
+              td {{ passagem.item.ORIGEM }}
               td {{ formataIdaVolta(passagem.item) }}
-              td {{ formataData(passagem.item.data_ida) }}
-              td {{ formataData(passagem.item.data_volta) }}
-              td {{ passagem.item.num_pessoas }}
-              td R$ {{ passagem.item.preco }}
+              td {{ formataData(passagem.item.DATA_IDA) }}
+              td {{ formataData(passagem.item.DATA_VOLTA) }}
+              td {{ passagem.item.NUM_PESSOAS }}
+              td R$ {{ passagem.item.PRECO }}
               td.justify-center.layout.px-0
                 v-icon(small, @click='comprarPassagem(passagem.item)') fa-shopping-cart
             template(slot='no-data')
@@ -62,151 +56,167 @@
       return {
         user: '',
         form: {
-          destino: 'Rio de Janeiro',
-          origem: 'Curitiba',
-          numPessoas: '15',
+          destino: '',
+          origem: '',
+          numPessoas: '',
           ida: true,
-          dataIda: '12/11/2018',
-          horaIda: '18:30:00',
+          dataIda: '',
+          horaIda: '',
           volta: false,
           dataVolta: '',
           horaVolta: '',
-          preco: '150'
+          preco: ''
         },
         headers: [
           {
+            text: 'Id.',
+            align: 'center',
+            sortable: true,
+            value: 'id'
+          }, {
             text: 'Destino',
             align: 'center',
             sortable: true,
-            value: 'destino'
+            value: 'DESTINO'
           }, {
             text: 'Origem',
             align: 'center',
             sortable: true,
-            value: 'origem'
+            value: 'ORIGEM'
           }, {
             text: 'Ida/Volta',
             align: 'center',
             sortable: true,
-            value: 'ida'
+            value: 'IDA'
           }, {
             text: 'Data Ida',
             align: 'center',
             sortable: true,
-            value: 'data_ida'
+            value: 'DATA_IDA'
           }, {
             text: 'Data Volta',
             align: 'center',
             sortable: true,
-            value: 'data_volta'
+            value: 'DATA_VOLTA'
           }, {
             text: 'Num. Pessoas',
             align: 'center',
             sortable: false,
-            value: 'num_pessoas'
+            value: 'NUM_PESSOAS'
           }, {
             text: 'Preço',
             align: 'center',
             sortable: true,
-            value: 'preco'
+            value: 'PRECO'
           }, {
             text: '',
             value: 'name',
             sortable: false
           }
         ],
-        passagens: [
-          {
-            idPassagem: '1542062754',
-            destino: 'São Paulo',
-            origem: 'Curitiba',
-            ida: 1,
-            volta: 1,
-            data_ida: '11/03/2018 14:15:16',
-            data_volta: '11/04/2018',
-            num_pessoas: 120,
-            preco: 150.00
-          }, {
-            idPassagem: '1542062779',
-            destino: 'Rio de Janeiro',
-            origem: 'Curitiba',
-            ida: 1,
-            volta: 0,
-            data_ida: '03/11/2018',
-            data_volta: '',
-            num_pessoas: 120,
-            preco: 100.00
-          }
-        ]
+        passagens: []
       }
     },
     created: function () {
       this.user = localStorage.getItem('user')
-      this.consultarPassagens()
+      if (this.user === undefined || this.user === '') {
+        this.$router.push('/login')
+      } else {
+        this.consultarPassagens()
+      }
     },
     methods: {
       formataData: function (data) {
-        if (data === '') {
+        if (data === '' || data === undefined) {
           return ''
         }
         return new Date(data).toLocaleString('pt-BR', {timeZone: 'UTC'})
       },
       formataIdaVolta: function (passagem) {
-        if (passagem.ida === 1 && passagem.volta === 1) {
+        if (passagem.IDA === 1 && passagem.VOLTA === 1) {
           return 'Ida/Volta'
-        } else if (passagem.ida === 1) {
+        } else if (passagem.IDA === 1) {
           return 'Ida'
-        } else if (passagem.volta === 1) {
+        } else if (passagem.VOLTA === 1) {
           return 'Volta'
         } else {
           return 'Não informado'
         }
       },
       comprarPassagem: function (passagem) {
-        const data = new window.FormData()
-        data.append('id', passagem.id)
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia', data).then(function (response) {
-          if (response.data.error !== 'error') {
-            Toastr.success('Passagem comprada')
-          } else {
-            Toastr.success(response.data.error)
-          }
+        let data = {
+          'id_passagem': passagem.id
+        }
+        this.$http.post('comprar_passagem', data).then(response => {
+          Toastr.success('Passagem comprada')
+          this.consultarPassagens()
+        }, error => {
+          Toastr.error(error.body)
         })
       },
       consultarPassagens: function () {
-        Toastr.info('Realizando consulta')
-        this.$http.get('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/consultar_passagens').then(function (response) {
-          if (response.ok) {
-            Toastr.success('Consulta realizada')
-            this.passagens = response.body
+        this.$http.get('consultar_passagens').then(response => {
+          return response.json()
+        }, error => {
+          console.log(error)
+        }).then(data => {
+          const result = []
+          for (let key in data) {
+            result.push(data[key])
           }
+          this.passagens = result
         })
       },
       cadastrarPassagem: function () {
+        if (this.form.destino === undefined || this.form.destino === '') {
+          Toastr.error('Necessário informar o destino')
+          return
+        }
+        if (this.form.origem === undefined || this.form.origem === '') {
+          Toastr.error('Necessário informar a origem')
+          return
+        }
+        if (this.form.volta === undefined || this.form.volta === '') {
+          Toastr.error('Necessário informar a data de ida')
+          return
+        }
+        if (this.form.dataIda === undefined || this.form.dataIda === '') {
+          Toastr.error('Necessário informar ')
+          return
+        }
+        if (this.form.volta && (this.form.dataVolta === undefined || this.form.dataVolta === '')) {
+          Toastr.error('Necessário informar a data de volta')
+          return
+        }
+        if (this.form.numPessoas === undefined || this.form.numPessoas === '') {
+          Toastr.error('Necessário informar o número de pessoas')
+          return
+        }
+        if (this.form.preco === undefined || this.form.preco === '') {
+          Toastr.error('Necessário informar o preço')
+          return
+        }
         let dataIda = new Date(this.form.dataIda)
-        let dataVolta = new Date(this.form.dataVolta)
-        const data = new window.FormData()
-        data.append('destino', this.form.destino)
-        data.append('origem', this.form.origem)
-        data.append('ida', this.form.ida ? 1 : 0)
-        data.append('volta', this.form.volta ? 1 : 0)
-        data.append('data_ida', dataIda)
-        data.append('data_volta', dataVolta)
-        data.append('numero_pessoas', this.form.numPessoas)
-        data.append('preco', this.form.preco)
-        // var json = JSON.stringify({destino: this.form.destino, origem: this.form.origem, ida: this.form.ida ? 1 : 0, volta: this.form.volta, data_ida: dataIda, data_volta: dataVolta, numero_pessoas: this.form.numPessoas, preco: this.preco})
-        // console.log(json)
-        // http://jsonplaceholder.typicode.com/posts
-        console.log('Cadastrando')
-        this.$http.post('http://sd1projeto3-myurb.a3c1.starter-us-west-1.openshiftapps.com/projeto3/agencia/cadastrar_passagem', data, {
-          'Content-Type': 'x-www-form-urlencoded'
-        }).then(function (response) {
-          if (response.data.error !== 'error') {
-            Toastr.success('Passagem cadastrada')
-            this.consultarPassagens()
-          } else {
-            Toastr.success(response.data.error)
-          }
+        console.log(this.form.dataIda)
+        let dataIdaFormat = dataIda.getUTCFullYear() + '-' + ('0' + dataIda.getUTCMonth()).slice(-2) + '-' + ('0' + dataIda.getUTCDate()).slice(-2) + 'T' + ('0' + dataIda.getHours()).slice(-2) + ':' + ('0' + dataIda.getMinutes()).slice(-2) + ':' + ('0' + dataIda.getSeconds()).slice(-2) + '.000Z'
+        let dataVolta = new Date(this.form.dataIda)
+        let dataVoltaFormat = dataVolta.getUTCFullYear() + '-' + ('0' + dataVolta.getUTCMonth()).slice(-2) + '-' + ('0' + dataVolta.getUTCDate()).slice(-2) + 'T' + ('0' + dataVolta.getHours()).slice(-2) + ':' + ('0' + dataVolta.getMinutes()).slice(-2) + ':' + ('0' + dataVolta.getSeconds()).slice(-2) + '.000Z'
+        let json = {
+          'destino': this.form.destino,
+          'origem': this.form.origem,
+          'ida': this.form.ida ? 1 : 0,
+          'volta': this.form.volta ? 1 : 0,
+          'data_ida': dataIdaFormat,
+          'data_volta': dataVoltaFormat,
+          'numero_pessoas': this.form.numPessoas,
+          'preco': this.form.preco
+        }
+        console.log(json)
+        this.$http.post('cadastrar_passagem', json).then(response => {
+          Toastr.success('Passagem cadastrada')
+          this.consultarPassagens()
+        }, error => {
+          Toastr.error(error.body)
         })
       }
     }
@@ -214,5 +224,7 @@
 </script>
 
 <style scoped>
-
+  .btn-center {
+    text-align: center;
+  }
 </style>
