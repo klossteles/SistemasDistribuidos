@@ -36,7 +36,7 @@
               td {{ hotel.item.DATA_SAIDA }}
               td {{ hotel.item.NUM_PESSOAS }}
               td {{ hotel.item.NUM_QUARTOS }}
-              td R$ {{ hotel.item.PRECO }}
+              td R$ {{ hotel.item.PRECO.toFixed(2) }}
               td.justify-center.layout.px-0
                 v-icon(small, @click='comprarHospedagem(hotel.item)') fa-shopping-cart
             template(slot='no-data')
@@ -120,7 +120,7 @@
           Toastr.success('Hotel comprada')
           this.consultarHospedagens()
         }, error => {
-          console.log(error)
+          Toastr.error(error.statusText)
         })
       },
       consultarHospedagens: function () {
@@ -137,6 +137,10 @@
         })
       },
       cadastrarHospedagem: function () {
+        if (this.form.dataRange === undefined || this.form.dataRange === '') {
+          Toastr.error('Necessário informar o período.')
+          return
+        }
         let rangeArr = JSON.stringify(this.form.dataRange).split(',')
         let dataEntrada = rangeArr[0].slice(2, rangeArr[0].length - 1)
         let dataSaida = rangeArr[1].slice(1, rangeArr[1].length - 2)
@@ -150,9 +154,14 @@
         }
         this.$http.post('cadastrar_hospedagem', json).then(response => {
           Toastr.success('Hospedagem cadastrada')
+          this.form.dataRange = ''
+          this.form.destino = ''
+          this.form.numQuartos = ''
+          this.form.numPessoas = ''
+          this.form.preco = ''
           this.consultarHospedagens()
         }, error => {
-          Toastr.error(error.body)
+          Toastr.error(error.statusText)
         })
       }
     }

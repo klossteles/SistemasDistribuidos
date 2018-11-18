@@ -19,10 +19,10 @@
             el-form-item(label='Origem')
               el-input(v-model='form.origem' style='width: 45%')
             el-form-item(label='Ida')
-              el-date-picker(v-if='form.ida', type='datetime', placeholder='Selecione uma data e hora', v-model='form.dataIda', style='width: 40%; margin-left: 10px')
+              el-date-picker(v-if='form.ida', type='datetime', placeholder='Selecione uma data e hora', v-model='form.dataIda', style='width: 50%; margin-left: 10px')
             el-form-item(label='Volta')
               el-switch(v-model='form.volta')
-              el-date-picker(v-if='form.volta', type='datetime', placeholder='Selecione uma data e hora', v-model='form.dataVolta', style='width: 40%; margin-left: 10px')
+              el-date-picker(v-if='form.volta', type='datetime', placeholder='Selecione uma data e hora', v-model='form.dataVolta', style='width: 50%; margin-left: 10px')
             el-form-item(label='Num. pessoas')
               el-input(type='number', v-model='form.numPessoas', style='width: 20%;')
             el-form-item(label='Preço')
@@ -40,7 +40,7 @@
               td {{ formataData(passagem.item.DATA_IDA) }}
               td {{ formataData(passagem.item.DATA_VOLTA) }}
               td {{ passagem.item.NUM_PESSOAS }}
-              td R$ {{ passagem.item.PRECO }}
+              td R$ {{ passagem.item.PRECO.toFixed(2) }}
               td.justify-center.layout.px-0
                 v-icon(small, @click='comprarPassagem(passagem.item)') fa-shopping-cart
             template(slot='no-data')
@@ -151,7 +151,7 @@
           Toastr.success('Passagem comprada')
           this.consultarPassagens()
         }, error => {
-          Toastr.error(error.body)
+          Toastr.error(error.statusText)
         })
       },
       consultarPassagens: function () {
@@ -197,10 +197,12 @@
           return
         }
         let dataIda = new Date(this.form.dataIda)
-        console.log(this.form.dataIda)
-        let dataIdaFormat = dataIda.getUTCFullYear() + '-' + ('0' + dataIda.getUTCMonth()).slice(-2) + '-' + ('0' + dataIda.getUTCDate()).slice(-2) + 'T' + ('0' + dataIda.getHours()).slice(-2) + ':' + ('0' + dataIda.getMinutes()).slice(-2) + ':' + ('0' + dataIda.getSeconds()).slice(-2) + '.000Z'
-        let dataVolta = new Date(this.form.dataIda)
-        let dataVoltaFormat = dataVolta.getUTCFullYear() + '-' + ('0' + dataVolta.getUTCMonth()).slice(-2) + '-' + ('0' + dataVolta.getUTCDate()).slice(-2) + 'T' + ('0' + dataVolta.getHours()).slice(-2) + ':' + ('0' + dataVolta.getMinutes()).slice(-2) + ':' + ('0' + dataVolta.getSeconds()).slice(-2) + '.000Z'
+        let dataIdaFormat = dataIda.getUTCFullYear() + '-' + ('0' + (dataIda.getMonth() + 1)).slice(-2) + '-' + ('0' + dataIda.getDate()).slice(-2) + 'T' + ('0' + dataIda.getHours()).slice(-2) + ':' + ('0' + dataIda.getMinutes()).slice(-2) + ':' + ('0' + dataIda.getSeconds()).slice(-2) + '.000Z'
+        let dataVoltaFormat = ''
+        if (this.form.volta) {
+          let dataVolta = new Date(this.form.dataVolta)
+          dataVoltaFormat = dataVolta.getUTCFullYear() + '-' + ('0' + (dataVolta.getMonth() + 1)).slice(-2) + '-' + ('0' + dataVolta.getDate()).slice(-2) + 'T' + ('0' + dataVolta.getHours()).slice(-2) + ':' + ('0' + dataVolta.getMinutes()).slice(-2) + ':' + ('0' + dataVolta.getSeconds()).slice(-2) + '.000Z'
+        }
         let json = {
           'destino': this.form.destino,
           'origem': this.form.origem,
@@ -211,12 +213,19 @@
           'numero_pessoas': this.form.numPessoas,
           'preco': this.form.preco
         }
-        console.log(json)
         this.$http.post('cadastrar_passagem', json).then(response => {
           Toastr.success('Passagem cadastrada')
+          this.form.preco = ''
+          this.form.numPessoas = ''
+          this.form.destino = ''
+          this.form.origem = ''
+          this.form.dataIda = ''
+          this.form.dataVolta = ''
+          this.form.ida = true
+          this.form.volta = false
           this.consultarPassagens()
         }, error => {
-          Toastr.error(error.body)
+          Toastr.error(error.statusText)
         })
       }
     }

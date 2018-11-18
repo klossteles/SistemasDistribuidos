@@ -56,7 +56,12 @@ public class PassagemAerea {
         }
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         LocalDateTime data_ida = LocalDateTime.parse(str_ida, format);
-        LocalDateTime data_volta = LocalDateTime.parse(str_volta, format);
+        LocalDateTime data_volta;
+        if (str_volta == "") {
+        	data_volta = LocalDateTime.parse(str_volta, format);	
+        } else {
+        	data_volta = null;
+        }
         
         if (data_ida != null && data_volta != null && data_ida.isAfter(data_volta)) {
             System.out.println("Data de entrada não pode ser posterior a data de saída.");
@@ -69,7 +74,7 @@ public class PassagemAerea {
         jo.put("IDA", ida);
         jo.put("VOLTA", volta);
         jo.put("DATA_IDA", data_ida);
-        jo.put("DATA_VOLTA", data_volta);
+        jo.put("DATA_VOLTA", data_volta != null ? data_volta : "");
         jo.put("NUM_PESSOAS", num_pessoas);
         jo.put("PRECO", preco);
         Long id = System.currentTimeMillis() + System.nanoTime();

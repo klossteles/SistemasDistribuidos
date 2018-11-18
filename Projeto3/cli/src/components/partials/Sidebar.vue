@@ -3,7 +3,6 @@
     div
       section.sidebar
         ul.sidebar-menu
-          <!--li.header APPS-->
           li
             router-link(to='/passagens')
               i.ti-ticket
@@ -20,7 +19,6 @@
             br
             br
             br
-      // /.sidebar
 
 </template>
 <script>

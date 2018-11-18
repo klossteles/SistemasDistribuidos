@@ -26,8 +26,11 @@
         .box
           v-data-table.elevation-1(:headers='headers' :items='pacotes' hide-actions='')
             template(slot='items', slot-scope='pacote')
+              td {{ pacote.item.id}}
               td {{ pacote.item.ID_PASSAGEM }}
               td {{ pacote.item.ID_HOSPEDAGEM }}
+              td {{ pacote.item.DESTINO }}
+              td R$ {{ pacote.item.PRECO.toFixed(2) }}
               td.justify-center.layout.px-0
                 v-icon(small, @click='comprarPacote(pacote.item)') fa-shopping-cart
             template(slot='no-data')
@@ -51,6 +54,11 @@
         },
         headers: [
           {
+            text: 'Id. pacote',
+            align: 'center',
+            sortable: true,
+            value: 'id'
+          }, {
             text: 'Id. passagem',
             align: 'center',
             sortable: true,
@@ -60,6 +68,16 @@
             align: 'center',
             sortable: true,
             value: 'id_hospedagem'
+          }, {
+            text: 'Destino',
+            align: 'center',
+            sortable: true,
+            value: 'DESTINO'
+          }, {
+            text: 'Preço',
+            align: 'center',
+            sortable: true,
+            value: 'PRECO'
           }, {
             text: '',
             value: 'name',
@@ -89,7 +107,7 @@
         this.$http.post('comprar_pacote', data).then(response => {
           Toastr.success('Pacote comprado')
         }, error => {
-          Toastr.error(error.body)
+          Toastr.error(error.statusText)
         })
       },
       consultarPacotes: function () {
@@ -103,7 +121,6 @@
             result.push(data[key])
           }
           this.pacotes = result
-          console.log(this.pacotes)
         })
       },
       consultarHospedagens: function () {
