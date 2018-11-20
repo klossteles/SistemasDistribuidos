@@ -107,10 +107,16 @@ public class Pacote {
         boolean comprou_hospedagem = hospedagem.comprarHospedagem(id_hospedagem);
         if (comprou_passagem && !comprou_hospedagem) {
             passagem.addPassagem(id_passagem);
+            if (!this.getHospedagens().getHospedagens().contains(id_hospedagem)) {
+            	this.getPacotes().remove(id);
+            }
             return false;
         }
         if (!comprou_passagem && comprou_hospedagem) {
             hospedagem.addHospedagem(id_hospedagem);
+            if (!this.getPassagens().getPassagensAereas().contains(id_passagem)) {
+            	this.getPacotes().remove(id);
+            }
             return false;
         }
         return true;

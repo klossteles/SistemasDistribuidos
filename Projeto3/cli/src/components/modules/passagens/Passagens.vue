@@ -169,31 +169,31 @@
       },
       cadastrarPassagem: function () {
         if (this.form.destino === undefined || this.form.destino === '') {
-          Toastr.error('Necessário informar o destino')
+          Toastr.error('Necessário informar o destino.')
           return
         }
         if (this.form.origem === undefined || this.form.origem === '') {
-          Toastr.error('Necessário informar a origem')
+          Toastr.error('Necessário informar a origem.')
           return
         }
         if (this.form.volta === undefined || this.form.volta === '') {
-          Toastr.error('Necessário informar a data de ida')
+          Toastr.error('Necessário informar se é volta.')
           return
         }
         if (this.form.dataIda === undefined || this.form.dataIda === '') {
-          Toastr.error('Necessário informar ')
+          Toastr.error('Necessário informar a data de ida.')
           return
         }
         if (this.form.volta && (this.form.dataVolta === undefined || this.form.dataVolta === '')) {
-          Toastr.error('Necessário informar a data de volta')
+          Toastr.error('Necessário informar a data de volta.')
           return
         }
         if (this.form.numPessoas === undefined || this.form.numPessoas === '') {
-          Toastr.error('Necessário informar o número de pessoas')
+          Toastr.error('Necessário informar o número de pessoas.')
           return
         }
         if (this.form.preco === undefined || this.form.preco === '') {
-          Toastr.error('Necessário informar o preço')
+          Toastr.error('Necessário informar o preço.')
           return
         }
         let dataIda = new Date(this.form.dataIda)

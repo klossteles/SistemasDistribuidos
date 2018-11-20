@@ -20,9 +20,9 @@
               el-date-picker(type='daterange', placeholder='Selecione uma data', range-separator="até", start-placeholder='Data inicial',
                 end-placeholder='Data final', v-model='form.dataRange', style='width: 100%;', format='dd/MM/yyyy')
             el-form-item(label='Num. pessoas')
-              el-input(type='number', v-model='form.numPessoas')
+              el-input(type='number', v-model='form.numPessoas', min='0')
             el-form-item(label='Num. Quartos')
-              el-input(type='number', v-model='form.numQuartos')
+              el-input(type='number', v-model='form.numQuartos', min='0')
             el-form-item(label='Preço')
               el-input(type='number', v-model='form.preco', step='0.10')
             div.btn-center
@@ -141,10 +141,26 @@
           Toastr.error('Necessário informar o período.')
           return
         }
+        if (this.form.destino === undefined || this.form.destino === '') {
+          Toastr.error('Necessário informar o destino.')
+          return
+        }
+        if (this.form.numPessoas === undefined || this.form.numPessoas === '') {
+          Toastr.error('Necessário informar o número de pessoas.')
+          return
+        }
+        if (this.form.numQuartos === undefined || this.form.numQuartos === '') {
+          Toastr.error('Necessário informar o número de quartos.')
+          return
+        }
+        if (this.form.preco === undefined || this.form.preco === '') {
+          Toastr.error('Preço inválido.')
+          return
+        }
         let rangeArr = JSON.stringify(this.form.dataRange).split(',')
         let dataEntrada = rangeArr[0].slice(2, rangeArr[0].length - 1)
         let dataSaida = rangeArr[1].slice(1, rangeArr[1].length - 2)
-        var json = {
+        var data = {
           'destino': this.form.destino,
           'numero_quartos': this.form.numQuartos,
           'numero_pessoas': this.form.numPessoas,
@@ -152,7 +168,7 @@
           'data_saida': dataSaida,
           'preco': this.form.preco
         }
-        this.$http.post('cadastrar_hospedagem', json).then(response => {
+        this.$http.post('cadastrar_hospedagem', data).then(response => {
           Toastr.success('Hospedagem cadastrada')
           this.form.dataRange = ''
           this.form.destino = ''

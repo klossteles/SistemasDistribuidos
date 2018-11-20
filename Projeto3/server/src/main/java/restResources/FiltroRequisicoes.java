@@ -29,7 +29,7 @@ public class FiltroRequisicoes implements Filter{
 		ServletContext context = request.getServletContext();
 		Server server = (Server) context.getAttribute("server");
 		
-		LOG.info("Inserir Objeto Server na RequisiÃ§Ã£o");
+		LOG.info("Inserir Objeto Server na Requisição");
 		request.setAttribute("server", server);
 
 		chain.doFilter(request, response);

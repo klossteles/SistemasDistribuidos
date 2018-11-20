@@ -203,7 +203,7 @@ public class Resources {
 		Server server = (Server) request.getAttribute("server");
 		
 		boolean resposta = server.getPacotes().comprarPacote(id);
-		return resposta ? getSucess("Passagem Comprada.") : getError("Falha ao Comprar Passagem.");
+		return resposta ? getSucess("Passagem Comprada.") : getError("Falha ao Comprar Pacote.");
 	}
 	
 	/**

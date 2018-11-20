@@ -107,8 +107,9 @@
         this.$http.post('comprar_pacote', data).then(response => {
           Toastr.success('Pacote comprado')
         }, error => {
-          Toastr.error(error.statusText)
+          Toastr.error(error.body)
         })
+        this.reloadFields()
       },
       consultarPacotes: function () {
         this.$http.get('consultar_pacotes').then(response => {
@@ -158,11 +159,11 @@
           Toastr.error('Necessário informar o identificador da passagem.')
           return
         }
-        var json = {
+        var data = {
           'id_hospedagem': this.form.idHospedagem,
           'id_passagem': this.form.idPassagem
         }
-        this.$http.post('cadastrar_pacote', json).then(response => {
+        this.$http.post('cadastrar_pacote', data).then(response => {
           Toastr.success('Pacote cadastrado')
           this.reloadFields()
         }, error => {
