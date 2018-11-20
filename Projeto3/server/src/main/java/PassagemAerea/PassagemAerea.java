@@ -57,7 +57,7 @@ public class PassagemAerea {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         LocalDateTime data_ida = LocalDateTime.parse(str_ida, format);
         LocalDateTime data_volta;
-        if (str_volta == "") {
+        if (str_volta != "") {
         	data_volta = LocalDateTime.parse(str_volta, format);	
         } else {
         	data_volta = null;
