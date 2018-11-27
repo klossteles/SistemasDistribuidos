@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c146e75a-e91f-4e99-94b0-2112c5a2c4d8" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/modules/hoteis/Hoteis.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modules/hoteis/Hoteis.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/modules/pacotes/Pacotes.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modules/pacotes/Pacotes.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/modules/passagens/Passagens.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modules/passagens/Passagens.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/main/java/pacotes/Pacote.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/pacotes/Pacote.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/main/java/restResources/FiltroRequisicoes.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/restResources/FiltroRequisicoes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/main/java/restResources/Resources.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/restResources/Resources.java" afterDir="false" />
-    </list>
+    <list default="true" id="c146e75a-e91f-4e99-94b0-2112c5a2c4d8" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -19,13 +11,29 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="-799857042">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.11" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.js.language.service.starts">
+        <counts>
+          <entry key="ESLintLanguageService" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/components/Login.vue">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="976">
-              <caret line="61" column="23" lean-forward="true" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
+              <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -33,8 +41,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/components/modules/passagens/Passagens.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3664">
-              <caret line="230" column="5" lean-forward="true" selection-start-line="230" selection-start-column="5" selection-end-line="230" selection-end-column="5" />
+            <state relative-caret-position="390">
+              <caret line="230" column="5" selection-start-line="230" selection-start-column="5" selection-end-line="230" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -42,8 +50,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/components/modules/hoteis/Hoteis.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="157" column="16" lean-forward="true" selection-start-line="157" selection-start-column="16" selection-end-line="157" selection-end-column="16" />
+            <state relative-caret-position="2512">
+              <caret line="157" column="16" selection-start-line="157" selection-start-column="16" selection-end-line="157" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -60,7 +68,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-240">
+            <state relative-caret-position="352">
               <caret line="38" column="29" selection-start-line="38" selection-start-column="29" selection-end-line="38" selection-end-column="29" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
@@ -72,7 +80,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="148">
+            <state relative-caret-position="160">
               <caret line="10" column="49" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
             </state>
           </provider>
@@ -81,7 +89,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/App.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
+            <state relative-caret-position="368">
               <caret line="23" column="41" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="41" />
             </state>
           </provider>
@@ -200,6 +208,22 @@
       </list>
     </option>
   </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER">
+    <package-json value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/node_modules" />
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/package.json" />
+    </packageJsonPaths>
+  </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="159" />
     <option name="y" value="343" />
@@ -214,6 +238,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -230,13 +255,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="pack&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/package.json&#10;main&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/main.js&#10;route&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/routes.js&#10;Side&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/components/partials/Sidebar.vue&#10;Pacotes&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/components/modules/pacotes/Pacotes.vue&#10;Ho&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/components/modules/hoteis/Hoteis.vue&#10;index.html&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/index.html&#10;routes&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Desktop/cli/src/routes.js&#10;webpack.&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/build/webpack.dev.conf.js&#10;packag&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/package.json&#10;index&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/config/index.js&#10;vue-loader&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/build/vue-loader.conf.js&#10;utils.js&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/build/utils.js&#10;index.js&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/config/index.js&#10;dev-ser&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/build/dev-server.js&#10;App&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/App.vue&#10;Main&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/main.js&#10;inde&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/index.html&#10;toas&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/node_modules/toastr/nuget/content/content/toastr.css&#10;vendor&#9;null&#9;null&#10;sidebar&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/cli/src/components/partials/Sidebar.vue&#10;dev-server&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/build/dev-server.js&#10;packa&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/package.json&#10;webpac&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/build/webpack.dev.conf.js&#10;webpack-&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/node_modules/webpack-dev-middleware&#10;main.js&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/main.js&#10;webpack.confi&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/node_modules/sweet-modal-vue/src/webpack.config.js&#10;pac&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/package.json&#10;Das&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/Dashboard.vue&#10;login&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/Login.vue&#10;hea&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/partials/Header.vue&#10;logo&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/assets/logo.png&#10;rou&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/routes.js&#10;rote&#9;null&#9;null&#10;Header&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/partials/Header.vue&#10;Icon&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/modules/ui/Icons.vue&#10;Sideba&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/partials/Sidebar.vue&#10;side&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/partials/Sidebar.vue&#10;pa&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/package.json&#10;app&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/App.vue&#10;index.j&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/config/index.js&#10;main.&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/main.js&#10;Index&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/modules/dashboard/Index.vue&#10;Mail&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/modules/Mail.vue&#10;Dashbo&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/src/components/Dashboard.vue&#10;in&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/client/index.html&#10;webpack.dev&#9;FILE&#9;file://C:/Users/Lucas S. Kloss Teles/Documents/SistemasDistribuidos/Projeto3/Vue/FULL/build/webpack.dev.conf.js" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
@@ -303,19 +328,25 @@
       <workItem from="1542306220710" duration="5015000" />
       <workItem from="1542716769105" duration="53000" />
       <workItem from="1542716984735" duration="3019000" />
+      <workItem from="1543334619753" duration="155000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62442000" />
+    <option name="totallyTimeSpent" value="62597000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19419643" />
+      <window_info id="Designer" />
+      <window_info id="Image Layers" />
+      <window_info id="Capture Tool" />
+      <window_info id="UI Designer" />
+      <window_info id="npm" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19742814" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -325,9 +356,15 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.3295082" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.22913256" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.22786885" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="TypeScript" order="11" />
+      <window_info anchor="right" id="Palette" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Maven Projects" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="Theme Preview" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.24962178" />
@@ -345,6 +382,9 @@
         <option value="1" />
       </list>
     </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
     <ignored-roots>
@@ -535,13 +575,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/modules/form/FormRate.vue" />
-    <entry file="file://$PROJECT_DIR$/src/components/modules/pacotes/Pacotes.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2032">
-          <caret line="127" column="15" selection-start-line="127" selection-start-column="15" selection-end-line="127" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="32">
@@ -552,13 +585,27 @@
     <entry file="file://$PROJECT_DIR$/src/components/Login.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="976">
-          <caret line="61" column="23" lean-forward="true" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
+          <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/modules/hoteis/Hoteis.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2512">
+          <caret line="157" column="16" selection-start-line="157" selection-start-column="16" selection-end-line="157" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/modules/pacotes/Pacotes.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2032">
+          <caret line="127" column="15" selection-start-line="127" selection-start-column="15" selection-end-line="127" selection-end-column="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-240">
+        <state relative-caret-position="352">
           <caret line="38" column="29" selection-start-line="38" selection-start-column="29" selection-end-line="38" selection-end-column="29" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
@@ -568,29 +615,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
+        <state relative-caret-position="160">
           <caret line="10" column="49" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/App.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
+        <state relative-caret-position="368">
           <caret line="23" column="41" selection-start-line="23" selection-start-column="36" selection-end-line="23" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/modules/hoteis/Hoteis.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="157" column="16" lean-forward="true" selection-start-line="157" selection-start-column="16" selection-end-line="157" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/modules/passagens/Passagens.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3664">
-          <caret line="230" column="5" lean-forward="true" selection-start-line="230" selection-start-column="5" selection-end-line="230" selection-end-column="5" />
+        <state relative-caret-position="390">
+          <caret line="230" column="5" selection-start-line="230" selection-start-column="5" selection-end-line="230" selection-end-column="5" />
         </state>
       </provider>
     </entry>
